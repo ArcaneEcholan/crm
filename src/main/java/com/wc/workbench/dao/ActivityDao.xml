@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wc.workbench.dao.ActivityDao">
+
+    <select id="queryAllUsers" resultType="com.wc.settings.domain.User">
+        select * from `tbl_user`
+    </select>
+
+    <update id="saveActivity">
+        insert into `tbl_activity` (
+             `id`,
+             `owner`,
+             `name`,
+             `startDate`,
+             `endDate`,
+             `cost`,
+             `description`,
+             `createTime`,
+             `createBy`
+        ) values (
+           #{id},
+           #{owner},
+           #{name},
+           #{startDate},
+           #{endDate},
+           #{cost},
+           #{description},
+           #{createTime},
+           #{createBy}
+        )
+    </update>
+
+    <select id="queryActivityPage" resultType="com.wc.workbench.domain.Activity">
+        SELECT
+        a.`name` owner, b.`id`, b.`name`, b.`startDate`, b.`endDate`
+        FROM
+        `tbl_user` a JOIN `tbl_activity` b ON a.id = b.owner
+        <where>
+            <if test="name!=null and name!=''">
+                b.`name` = #{name}
+            </if>
+            <if test="owner!=null and owner!=''">
+                and a.`name` = #{owner}
+            </if>
+            <if test="startTime!=null and startTime!=''">
+                and b.startDate &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and b.endDate &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryActivityPageCount" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            `tbl_user` a JOIN `tbl_activity` b ON a.id = b.owner
+        <where>
+            <if test="name!=null and name!=''">
+                b.`name` = #{name}
+            </if>
+            <if test="owner!=null and owner!=''">
+                and a.`name` = #{owner}
+            </if>
+            <if test="startTime!=null and startTime!=''">
+                and b.startDate &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and b.endDate &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteActivity">
+        delete from tbl_activity
+        where id in
+        <foreach collection="ids" item="aid" open="(" close=")" separator=",">
+            #{aid}
+        </foreach>
+    </delete>
+
+
+
+    <select id="queryActivityByActivityId" resultType="com.wc.workbench.domain.Activity">
+        SELECT
+        `name`, `cost`, `startDate`, `endDate`, `description`
+        FROM
+        `tbl_activity`
+        where
+            `id`=#{aid}
+    </select>
+
+<!--    <select id="editActivity">-->
+
+<!--        update `tbl_activity`-->
+<!--        set-->
+<!--    </select>-->
+
+
+    <update id="updateActivity">
+        update `tbl_activity`
+            set `owner`=#{owner},
+            `name`=#{name},
+            `startDate`=#{startDate},
+            `endDate`=#{endDate},
+            `cost`=#{cost},
+            `description`=#{description},
+            `editTime`=#{editTime},
+            `editBy`=#{editBy}
+        where
+            `id` = #{id}
+    </update>
+
+    <select id="queryActivityDetail" resultType="com.wc.workbench.domain.Activity">
+        SELECT
+            *
+        FROM
+            `tbl_activity`
+        where
+            `id`=#{id}
+    </select>
+
+
+
+
+
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

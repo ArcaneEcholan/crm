@@ -1,0 +1,25 @@
+select
+tran.id id,
+user.name owner,
+tran.money money,
+tran.name name,
+tran.expectedDate expectedDate,
+customer.name customerId,
+tran.stage stage,
+tran.type type,
+tran.source source ,
+act.name activityId,
+contacts.name contactsId,
+tran.createBy createBy,
+tran.createTime createTime,
+tran.editBy editBy,
+tran.editTime editTime,
+tran.description description,
+tran.contactSummary contactSummary,
+tran.nextContactTime nextContactTime
+
+FROM `tbl_tran` tran JOIN `tbl_contacts` contacts ON tran.`contactsId` = contacts.`id`
+join `tbl_customer` cusTOMEr on tran.`customerId` = CUstomer.`id`
+join `tbl_user` `user` ON Tran.`owner` = user.`ID`
+join `tbl_activitY` act on tran.`activityId` = act.`id`
+where id="16EAD34325694ee6a063ce4d7b342f21";
