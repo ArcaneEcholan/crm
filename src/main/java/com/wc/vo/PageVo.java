@@ -4,22 +4,39 @@ package com.wc.vo;
 import java.util.List;
 
 public class PageVo<T> {
-   private int total;
-   private List<T> activityList;
+   private int totalCount;
+   private int totalPages;
+   private List<T> list;
 
-    public int getTotal() {
-        return total;
+    public PageVo() {
+    }
+    public PageVo(int totalCount, int totalPages, List<T> list) {
+        this.totalCount = totalCount;
+        this.totalPages = totalPages;
+        this.list = list;
     }
 
-    public void setTotal(int total) {
-        this.total = total;
+    public int getTotalPages() {
+        return totalPages;
     }
 
-    public List<T> getActivityList() {
-        return activityList;
+    public void setTotalPages(int totalPages) {
+        this.totalPages = totalPages;
     }
 
-    public void setActivityList(List<T> activityList) {
-        this.activityList = activityList;
+    public int getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
+    }
+
+    public List<T> getList() {
+        return list;
+    }
+
+    public void setList(List<T> list) {
+        this.list = list;
     }
 }

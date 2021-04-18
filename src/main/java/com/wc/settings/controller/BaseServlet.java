@@ -23,6 +23,7 @@ public class BaseServlet extends HttpServlet {
         String action = req.getParameter("action");
 
         try {
+
             Method method = this.getClass().getDeclaredMethod(action, HttpServletRequest.class, HttpServletResponse.class);
             method.invoke(this, req,resp);
         } catch (Exception e) {

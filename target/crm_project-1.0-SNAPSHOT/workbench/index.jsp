@@ -7,6 +7,8 @@ String base = request.getScheme()
 + request.getServerPort()
 + request.getContextPath()
 + "/";
+
+	System.out.println(request.getServletPath());
 %>
 
 <!DOCTYPE html>

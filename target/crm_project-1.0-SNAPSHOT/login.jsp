@@ -23,38 +23,54 @@ String base = request.getScheme()
 
 		$(function () {
 
-			// if(window.top!=window) {
-			// 	window.top.location=window.location;
-			// }
+			//将当前窗口置为顶层窗口
+			if(window.top!=window) {
+				window.top.location=window.location;
+			}
 
-			//获取按钮并注册事件
-			$("#submitBtn").click(function () {
 
-				var username = $.trim($("#loginAct").val());
-				var password = $.trim($("#loginPwd").val());
+			$("#loginAct").focus();
 
-				if(username=="" || password=="") {
-					$("#msg").html("账号密码不能为空");
-					return false;
+
+			//回车登录
+			$(window).keydown(function (event) {
+				if(event.keyCode==13) {
+					login()
 				}
+			})
 
-				$.post("userServlet", {"action":"login" ,"username":username,"password":password}, function (data) {
-					//登录成功就跳转
-					if(data.success) {
-						window.location.href="workbench/index.jsp";
-					}
-					//否则打印错误信息
-					else {
-						$("#msg").html(data.msg);
-					}
-				}, "json");
-
+			$("#submitBtn").click(function () {
+				login()
 			})
 		})
-	</script>
+
+		function login() {
+			var username = $.trim($("#loginAct").val());
+			var password = $.trim($("#loginPwd").val());
+
+			if(username=="" || password=="") {
+				$("#msg").html("账号密码不能为空");
+				return false;
+			}
+
+			$.post("userServlet",
+					{
+						"action":"login" ,
+						"username":username,
+						"password":password
+					}, function (data) {
+						//登录成功就跳转
+						if(data.success) {
+							window.location.href="workbench/index.jsp";
+						}
+						//否则打印错误信息
+						else {
+							$("#msg").html(data.msg);
+						}
+					}, "json");
+		}
 
 	</script>
-
 </head>
 
 <body>
@@ -71,7 +87,7 @@ String base = request.getScheme()
 			<div class="page-header">
 				<h1>登录</h1>
 			</div>
-			<form action="workbench/index.jsp" class="form-horizontal" role="form">
+			<form id="loginForm" action="workbench/index.jsp" class="form-horizontal" role="form">
 				<div class="form-group form-group-lg">
 					<div style="width: 350px;">
 						<input class="form-control" type="text" placeholder="用户名" id="loginAct">
@@ -84,7 +100,7 @@ String base = request.getScheme()
 							<span id="msg"></span>
 						
 					</div>
-<%--					不能使用submit类型，如果这样的话放在form里面就相当于submit标签--%>
+					<%--不能使用submit类型，如果这样的话放在form里面就相当于submit标签--%>
 					<button id = "submitBtn" type="button" class="btn btn-primary btn-lg btn-block"  style="width: 350px; position: relative;top: 45px;">登录</button>
 				</div>
 			</form>

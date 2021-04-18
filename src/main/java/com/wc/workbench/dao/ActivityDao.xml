@@ -52,6 +52,8 @@
                 and b.endDate &lt;= #{endTime}
             </if>
         </where>
+        order by b.createTime desc
+        limit #{skipCount}, #{pageSize}
     </select>
 
     <select id="queryActivityPageCount" resultType="int">

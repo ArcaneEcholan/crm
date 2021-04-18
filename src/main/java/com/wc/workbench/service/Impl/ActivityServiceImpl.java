@@ -2,44 +2,41 @@ package com.wc.workbench.service.Impl;
 
 import com.wc.settings.domain.User;
 import com.wc.utils.SqlSessionUtil;
+import com.wc.vo.PageVo;
 import com.wc.workbench.dao.ActivityDao;
 import com.wc.workbench.dao.ActivityRemarkDao;
 import com.wc.workbench.domain.Activity;
 import com.wc.workbench.domain.ActivityRemark;
 import com.wc.workbench.service.ActivityService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ActivityServiceImpl implements ActivityService {
 
-    ActivityDao activityDao = null;
+    ActivityDao activityDao = SqlSessionUtil.getSqlSession().getMapper(ActivityDao.class);
 
     ActivityRemarkDao activityRemarkDao = null;
 
     public List<User> getUserList() {
-        activityDao = SqlSessionUtil.getSqlSession().getMapper(ActivityDao.class);
         return activityDao.queryAllUsers();
     }
 
     public boolean createActivity(Activity activity) {
-        activityDao = SqlSessionUtil.getSqlSession().getMapper(ActivityDao.class);
         return activityDao.saveActivity(activity);
     }
 
-    public List<Activity> page(Map<String, Object> map) {
+    public PageVo<Activity> page(Map<String, Object> map) {
+        //查询当页记录和总的记录数
+        List<Activity> pageAct = activityDao.queryActivityPage(map);    //查询当页所有活动
+        int totalActCount = activityDao.queryActivityPageCount(map);    //查询所有符合查询条件的活动数量
+        //计算总页数
+        Integer pageSize = (Integer)map.get("pageSize");
+        int totalPages = totalActCount % pageSize ==0 ?  totalActCount / pageSize : totalActCount / pageSize + 1;
 
-        System.out.println("<<<<<<<dao queryActivityPage start>>>>>>>>>>>");
-
-        //每次执行service方法时都更新dao对象到当前连接
-        activityDao = SqlSessionUtil.getSqlSession().getMapper(ActivityDao.class);
-
-        List<Activity> activities = activityDao.queryActivityPage(map);
-
-        System.out.println("<<<<<<<dao queryActivityPage end>>>>>>>>>>>");
-
-
-        return activities;
+        //int totalCount, int totalPages, List<T> list
+        return new PageVo<Activity>(totalActCount, totalPages, pageAct);
     }
 
     public int queryTotalCount(Map<String, Object> map) {
@@ -47,7 +44,6 @@ public class ActivityServiceImpl implements ActivityService {
         System.out.println("<<<<<<<dao queryActivityPageCount start>>>>>>>>>>>");
 
         //每次执行service方法时都更新dao对象到当前连接
-        activityDao = SqlSessionUtil.getSqlSession().getMapper(ActivityDao.class);
 
         int total = activityDao.queryActivityPageCount(map);
 

@@ -1,6 +1,7 @@
 package com.wc.workbench.service;
 
 import com.wc.settings.domain.User;
+import com.wc.vo.PageVo;
 import com.wc.workbench.domain.Activity;
 import com.wc.workbench.domain.ActivityRemark;
 
@@ -13,7 +14,7 @@ public interface ActivityService {
 
     boolean createActivity(Activity activity);
 
-    List<Activity> page(Map<String, Object> map);
+    PageVo<Activity> page(Map<String, Object> map);
 
     int queryTotalCount(Map<String, Object> map);
 

@@ -22,6 +22,10 @@ String base = request.getScheme()
 <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
 <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
 
+<%--	分页插件--%>
+	<link rel="stylesheet" type="text/css" href="jquery/bs_pagination/jquery.bs_pagination.min.css">
+	<script type="text/javascript" src="jquery/bs_pagination/jquery.bs_pagination.min.js"></script>
+	<script type="text/javascript" src="jquery/bs_pagination/en.js"></script>
 
 <script type="text/javascript">
 
@@ -39,32 +43,36 @@ String base = request.getScheme()
 			pickerPosition: "bottom-left"
 		});
 
-		//打开创建模态窗口
+
 		$("#addBtn").click(function () {
-			$.getJSON("activityServlet", "action=getUserList", function (data) {
-					//data:[{user},{},{}]
-					var html = "<option></option>";
+			$.get("activityServlet",
+					"action=getUserList",
+			function(data) {
+				//data:[{user1}{user2}{user3}]
+				//从后台获取数据铺到页面上
+				var html="";
+				$.each(data, function(i, n) {
+					//n:{user}
+					html += "<option value='"+n.id+"'>"+n.name+"</option>";
+				})
+				$("#create-owner").html(html);
 
-					$.each(data,function (i,n) {
-						//n:{user}
-						html += "<option value='"+n.id+"'>"+n.name+"</option>";
-					})
+				//将当前用户设置成下拉框默认的选项
+				$("#create-owner").val("${sessionScope.user.id}");
 
-					$("#create-owner").html(html);
-
-					$("#createActivityModal").modal("show");
-				}
-			)
+				//展现模态窗口
+				$("#createActivityModal").modal("show");
+			}, "json")
 		})
 
-        //点击保存创建活动
+        //保存市场活动
         $("#create-saveBtn").click(function() {
-            $.getJSON("activityServlet", {
+            $.post("activityServlet", {
                     "action":"createActivity",
 
-					//create-owner是owner的id
-                    "owner" : $.trim($("#create-owner").val()),
+					//提交表单内容
                     "name" : $.trim($("#create-name").val()),
+					"owner" : $.trim($("#create-owner").val()), 	//create-owner是列表，值是选中的选项的value
                     "startDate" : $.trim($("#create-startTime").val()),
                     "endDate" : $.trim($("#create-endTime").val()),
                     "cost" : $.trim($("#create-cost").val()),
@@ -72,17 +80,13 @@ String base = request.getScheme()
                 }, function (data) {
             		//data:{success:true/false}
                     if(data.success) {
-                        //清空模态窗口的所有已经填写的数据
-                        $("#createForm")[0].reset();
-                        //隐藏模态窗口
-                        $("#createActivityModal").modal("hide");
-                        //刷新市场活动列表
-						pageList(1,100);
+                        $("#createForm")[0].reset();  //清空模态窗口的所有已经填写的数据
+                        $("#createActivityModal").modal("hide");  //关闭模态窗口
+						pageList(1,2);	//刷新市场活动列表
                     } else {
                         alert("添加失败");
                     }
-                }
-            )
+                },"json")
         })
 
         //打开修改活动模态窗口
@@ -198,10 +202,9 @@ String base = request.getScheme()
 	//分页函数
 	function pageList(pageNo, pageSize) {
 
-		// alert($("#startTime").val());
-
-		$.getJSON("activityServlet", {
+		$.get("activityServlet", {
 			"action":"page",
+			//发送页码，每页大小
 			"pageNo":pageNo,
 			"pageSize":pageSize,
 
@@ -211,26 +214,42 @@ String base = request.getScheme()
 			"startTime":$("#startTime").val(),
 			"endTime":$("#endTime").val()
 		},function (data) {
-
+			//来自服务器：data:{totalCount:总记录数 ,totalPages：总页数， list:[{act1}{act2}{act3}]}
+			//将数据展示在页面上
 			var html = "";
-			$.each(data.activityList, function (i,n) {
-
-				console.log(n);
-
+			$.each(data.list, function (i,n) {
+				//n:{act}
 				html += '<tr>';
-					html += '<td> <input type="checkbox" name="xz" value="'+n.id+'"/> </td>';
-					html += '<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href=\'activityServlet?action=showDetail&id=' +n.id+ ' \';\">' +n.name+ '</a></td>';
-					html += '<td>'+n.owner+'</td>';
-					html += '<td>'+n.startDate+'</td>';
-					html += '<td>'+n.endDate+'</td>';
+				html += '<td> <input type="checkbox" name="xz" value="'+n.id+'"/> </td>';
+				html += '<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href=\'activityServlet?action=showDetail&id=' +n.id+ ' \';\">' +n.name+ '</a></td>';
+				html += '<td>'+n.owner+'</td>';	//owner是所有者名字
+				html += '<td>'+n.startDate+'</td>';
+				html += '<td>'+n.endDate+'</td>';
 				html += '</tr>';
 			});
-            // alert(html);
-
-			// console.log(html);
-
 			$("#activityBody").html(html);
-		})
+
+			//前端分页插件
+			$("#activityPage").bs_pagination({
+				currentPage: pageNo, // 页码
+				rowsPerPage: pageSize, // 每页显示的记录条数
+				maxRowsPerPage: 20, // 每页最多显示的记录条数
+				totalPages: data.totalPages, // 总页数
+				totalRows: data.totalCount, // 总记录条数
+
+				visiblePageLinks: 3, // 显示几个卡片
+
+				showGoToPage: true,
+				showRowsPerPage: true,
+				showRowsInfo: true,
+				showRowsDefaultInfo: true,
+
+				onChangePage : function(event, data){
+					pageList(data.currentPage , data.rowsPerPage);
+				}
+			});
+
+		}, "json")
 	}
 </script>
 </head>
@@ -360,7 +379,7 @@ String base = request.getScheme()
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" id="create-closeBtn">关闭</button>
-					<button type="button" class="btn btn-primary" id="create-saveBtn">保存</button>
+					<button type="button" class="btn btn-primary" id="create-saveBtn">保存按钮</button>
 				</div>
 			</div>
 		</div>
@@ -467,40 +486,12 @@ String base = request.getScheme()
 					</tbody>
 				</table>
 			</div>
-			
+
+
+
+<%--			分页组件--%>
 			<div style="height: 50px; position: relative;top: 30px;">
-				<div>
-					<button type="button" class="btn btn-default" style="cursor: default;">共<b>50</b>条记录</button>
-				</div>
-				<div class="btn-group" style="position: relative;top: -34px; left: 110px;">
-					<button type="button" class="btn btn-default" style="cursor: default;">显示</button>
-					<div class="btn-group">
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-							10
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu" role="menu">
-							<li><a href="#">20</a></li>
-							<li><a href="#">30</a></li>
-						</ul>
-					</div>
-					<button type="button" class="btn btn-default" style="cursor: default;">条/页</button>
-				</div>
-				<div style="position: relative;top: -88px; left: 285px;">
-					<nav>
-						<ul class="pagination">
-							<li class="disabled"><a href="#">首页</a></li>
-							<li class="disabled"><a href="#">上一页</a></li>
-							<li class="active"><a href="#">1</a></li>
-							<li><a href="#">2</a></li>
-							<li><a href="#">3</a></li>
-							<li><a href="#">4</a></li>
-							<li><a href="#">5</a></li>
-							<li><a href="#">下一页</a></li>
-							<li class="disabled"><a href="#">末页</a></li>
-						</ul>
-					</nav>
-				</div>
+				<div id="activityPage"></div>
 			</div>
 			
 		</div>

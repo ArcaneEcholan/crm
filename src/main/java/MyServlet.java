@@ -15,7 +15,8 @@ public class MyServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("afj;soiefnas;jhief");
+        System.out.println(req.getServletPath());
+        System.out.println("hello");
     }
 
     @Override

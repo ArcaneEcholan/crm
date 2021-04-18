@@ -17,10 +17,7 @@
     <script type="text/javascript">
 
         $(function(){
-
-            $("#testSelect").change(function () {
-                console.log($(this).val());
-            })
+            $("#testSelect").val(2);
         });
 
         //关联市场活动按钮

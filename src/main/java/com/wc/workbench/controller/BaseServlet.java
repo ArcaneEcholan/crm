@@ -20,6 +20,7 @@ public class BaseServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("j30uj038j-083u408jf-083u98ut98hjfg8hj-2yh5978ghpwadjfhj-08j48fjhjpdfj8-3j4p9f8hj-9843-");
         String action = req.getParameter("action");
         System.out.println("<<======================================================" + action + " start=========================================================================================>>");
 

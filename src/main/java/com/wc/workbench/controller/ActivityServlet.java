@@ -16,19 +16,33 @@ import java.util.*;
 
 public class ActivityServlet extends BaseServlet{
 
-    protected void getUserList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ActivityService activityService = (ActivityService)ServiceFactory.getService(new ActivityServiceImpl());
-        List<User> userList = activityService.getUserList();
-        for (int i = 0; i < userList.size(); i++) {
-            System.out.println(userList.get(i));
-        }
-        PrintJson.printJsonObj(resp, userList);
-//        PrintJson.printJsonObj(resp, userList.get(0));
 
+    /**
+     * 获取数据库中所有user信息
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
+    protected void getUserList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+
+        //获取数据库中user列表
+        List<User> userList= activityService.getUserList();
+
+        //将user返回前端
+        PrintJson.printJsonObj(resp, userList);
     }
 
+    /**
+     * 保存活动
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     protected void createActivity(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+        //获取表单参数
         String id = UUIDUtil.getUUID();
         String owner = req.getParameter("owner");
         String name = req.getParameter("name");
@@ -40,29 +54,25 @@ public class ActivityServlet extends BaseServlet{
         String createTime = DateTimeUtil.getSysTime();
         String createBy = ((User) req.getSession().getAttribute("user")).getName();
 
-        //String id, String owner, String name, String startDate, String endDate, String cost, String description, String createTime, String createBy, String editTime, String editBy
         Activity activity = new Activity(id, owner, name, startDate, endDate, cost, description, createTime, createBy, null, null);
-
-        System.out.println(activity);
-
 
         ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
 
+        //保存到数据库中
         boolean success = activityService.createActivity(activity);
 
+        //返回是否成功
         PrintJson.printJsonFlag(resp, success);
     }
 
 
     protected void page(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("page start");
-
-        String pageNoStr = req.getParameter("pageNo");
-        String pageSizeStr = req.getParameter("pageSize");
-        int pageNo = Integer.parseInt(pageNoStr);
-        int pageSize = Integer.parseInt(pageSizeStr);
+        //获取分页条件
+        int pageNo = Integer.parseInt(req.getParameter("pageNo"));
+        int pageSize = Integer.parseInt(req.getParameter("pageSize"));
         int skipCount =  (pageNo - 1) * pageSize;
 
+        //获取查询条件
         String name = req.getParameter("name");
         String owner = req.getParameter("owner");
         String startTime = req.getParameter("startTime");
@@ -70,7 +80,7 @@ public class ActivityServlet extends BaseServlet{
 
         ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
 
-
+        //将查询参数封装成map
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("name", name);
         map.put("owner", owner);
@@ -79,61 +89,10 @@ public class ActivityServlet extends BaseServlet{
         map.put("skipCount", skipCount);
         map.put("pageSize", pageSize);
 
-        System.out.println(map);
+        //前端需要数据：act列表，总记录数，总页数
+        PageVo<Activity> pageVo = activityService.page(map);
 
-        List<Activity> activityList = null;
-        int total = 0;
-        try{
-            //查询分页数据
-            activityList = activityService.page(map);
-
-            System.out.println(SqlSessionUtil.threadLocal.get());
-
-            //activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
-            //查询总记录数
-            total = activityService.queryTotalCount(map);
-        }catch (Exception e) {
-            System.out.println(e.getCause().getMessage());
-        }
-
-        PageVo<Activity> pageVo = new PageVo<Activity>();
-
-        pageVo.setActivityList(activityList);
-        pageVo.setTotal(total);
-
-        System.out.println(total);
-        System.out.println(activityList);
-
-
-        //        this.id = id;
-        //        this.owner = owner;
-        //        this.name = name;
-        //        this.startDate = startDate;
-        //        this.endDate = endDate;
-        //        this.cost = cost;
-        //        this.description = description;
-        //        this.createTime = createTime;
-        //        this.createBy = createBy;
-        //        this.editTime = editTime;
-        //        this.editBy = editBy;
-
-//
-//        Activity activity1 = new Activity(null, "1212", "采蘑菇", null, null, null, null, null, null, null, null);
-//        Activity activity2 = new Activity(null, "1212", "采蘑菇", null, null, null, null, null, null, null, null);
-//        Activity activity3 = new Activity(null, "1212", "采蘑菇", null, null, null, null, null, null, null, null);
-//        List<Activity> list = new ArrayList<Activity>();
-//
-//        list.add(activity1);
-//        list.add(activity2);
-//        list.add(activity3);
-//
-//
-//        PageVo<Activity> pageVo = new PageVo<Activity>();
-//        pageVo.setTotal(1);
-//        pageVo.setActivityList(list);
-
-
-
+        //将数据返回前端
         PrintJson.printJsonObj(resp, pageVo);
     }
 
