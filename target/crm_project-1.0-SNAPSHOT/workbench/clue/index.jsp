@@ -144,7 +144,6 @@ String base = request.getScheme()
 			});
 			$("#clueBody").html(html);
 
-
 			//前端分页插件
 			$("#activityPage").bs_pagination({
 				currentPage: pageNo, // 页码
@@ -160,6 +159,7 @@ String base = request.getScheme()
 				showRowsInfo: true,
 				showRowsDefaultInfo: true,
 
+				//选择分页的时候会触发该函数
 				onChangePage : function(event, data){
 					pageList(data.currentPage , data.rowsPerPage);
 				}
