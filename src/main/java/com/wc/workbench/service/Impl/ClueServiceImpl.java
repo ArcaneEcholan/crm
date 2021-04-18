@@ -3,6 +3,7 @@ package com.wc.workbench.service.Impl;
 import com.wc.utils.DateTimeUtil;
 import com.wc.utils.SqlSessionUtil;
 import com.wc.utils.UUIDUtil;
+import com.wc.vo.PageVo;
 import com.wc.workbench.dao.*;
 import com.wc.workbench.domain.*;
 import com.wc.workbench.service.ClueService;
@@ -28,11 +29,11 @@ public class ClueServiceImpl implements ClueService {
         return clueDao.saveClue(clue);
 
     }
-
-    public List<Clue> showClueList(Clue clue) {
-
-        return clueDao.queryClueListByClue(clue);
-    }
+//
+//    public List<Clue> showClueList(Clue clue) {
+//
+//        return clueDao.queryClueListByClue(clue);
+//    }
 
     public Clue getClueById(String id) {
 
@@ -271,6 +272,18 @@ public class ClueServiceImpl implements ClueService {
 
 
         return flag;
+    }
+
+    public PageVo<Clue> page(Map<String, Object> map) {
+        //获取总记录数和每页的数据
+        List<Clue> clueList = clueDao.queryPageCluesByConditions(map);
+        int totalCount = clueDao.queryTotalClueCountByConditions(map);
+        
+        //计算总页数
+        Integer pageSize = (Integer)map.get("pageSize");
+        Integer totalPages = totalCount % pageSize == 0 ? totalCount / pageSize : totalCount / pageSize + 1;
+
+        return new PageVo<Clue>(totalCount, totalPages, clueList);
     }
 
 }

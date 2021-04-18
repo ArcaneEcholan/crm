@@ -4,6 +4,7 @@ import com.wc.settings.domain.User;
 import com.wc.settings.service.Impl.UserServiceImpl;
 import com.wc.settings.service.UserService;
 import com.wc.utils.*;
+import com.wc.vo.PageVo;
 import com.wc.workbench.domain.Activity;
 import com.wc.workbench.domain.Clue;
 import com.wc.workbench.domain.Tran;
@@ -82,32 +83,43 @@ public class ClueServlet extends BaseServlet {
         PrintJson.printJsonFlag(resp,success );
     }
 
-    protected void showClueList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void page(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+        //接收查询参数，可有可无
         String fullname = req.getParameter("fullname");
         String company = req.getParameter("company");
         String phone = req.getParameter("phone");
         String source = req.getParameter("source");
-        String ownerName = req.getParameter("ownerName");
+        String owner = req.getParameter("owner");
         String mphone = req.getParameter("mphone");
         String state = req.getParameter("state");
 
-        Clue clue = new Clue();
-        clue.setFullname(fullname);
-        clue.setCompany(company);
-        clue.setPhone(phone);
-        clue.setSource(source);
-        clue.setOwner(ownerName);
-        clue.setMphone(mphone);
-        clue.setState(state);
+        //接收分页参数
+        int pageNo = Integer.parseInt(req.getParameter("pageNo"));
+        int pageSize = Integer.parseInt(req.getParameter("pageSize"));
+        int skipCount = (pageNo - 1) * pageSize;
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("fullname", fullname);
+        map.put("company", company);
+        map.put("phone", phone);
+        map.put("source", source);
+        map.put("owner", owner);
+        map.put("mphone", mphone);
+        map.put("state", state);
+        map.put("pageNo", pageNo);
+        map.put("pageSize", pageSize);
+        map.put("skipCount", skipCount);
+
+
 
         ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
 
-        List<Clue> clueList = clueService.showClueList(clue);
-        System.out.println(clueList);
+        //前端需要数据：总页数，总记录数，每页数据
+        PageVo<Clue> pageVo= clueService.page(map);
 
-
-        PrintJson.printJsonObj(resp, clueList);
+        //将数据返回前端
+        PrintJson.printJsonObj(resp, pageVo);
     }
 
     protected void showDetail(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

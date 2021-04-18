@@ -30,4 +30,8 @@ public interface ClueDao {
     Clue queryClueById2(String clueId);
 
     boolean delById(String clueId);
+
+    List<Clue> queryPageCluesByConditions(Map<String, Object> map);
+
+    int queryTotalClueCountByConditions(Map<String, Object> map);
 }

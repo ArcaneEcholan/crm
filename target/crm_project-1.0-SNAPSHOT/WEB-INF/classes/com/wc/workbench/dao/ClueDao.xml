@@ -6,6 +6,64 @@
 <mapper namespace="com.wc.workbench.dao.ClueDao">
 
 
+    <select id="queryPageCluesByConditions" resultType="com.wc.workbench.domain.Clue">
+            SELECT
+                clue.id id, clue.fullname fullname, clue.company company, mphone, phone, `source`, `user`.name owner, `state`
+            FROM
+                `tbl_clue` clue JOIN `tbl_user` `user` ON clue.owner = user.id
+            <where>
+                <if test="fullname!=null and fullname!=''">
+                    fullname = #{fullname}
+                </if>
+                <if test="company!=null and company!=''">
+                    and company = #{company}
+                </if>
+                <if test="phone!=null and phone!=''">
+                    and phone = #{phone}
+                </if>
+                <if test="source!=null and source!=''">
+                    and source = #{source}
+                </if>
+                <if test="owner!=null and owner!=''">
+                    and `user`.name = #{owner}
+                </if>
+                <if test="mphone!=null and mphone!=''">
+                    and mphone = #{mphone}
+                </if>
+            </where>
+            order by clue.createTime desc
+            limit #{skipCount}, #{pageSize}
+    </select>
+
+
+    <select id="queryTotalClueCountByConditions" resultType="int">
+        SELECT
+            count(*)
+        FROM
+        `tbl_clue` clue JOIN `tbl_user` `user` ON clue.owner = user.id
+        <where>
+            <if test="fullname!=null and fullname!=''">
+                fullname = #{fullname}
+            </if>
+            <if test="company!=null and company!=''">
+                and company = #{company}
+            </if>
+            <if test="phone!=null and phone!=''">
+                and phone = #{phone}
+            </if>
+            <if test="source!=null and source!=''">
+                and source = #{source}
+            </if>
+            <if test="owner!=null and owner!=''">
+                and `user`.name = #{owner}
+            </if>
+            <if test="mphone!=null and mphone!=''">
+                and mphone = #{mphone}
+            </if>
+        </where>
+    </select>
+
+
     <delete id="delById">
         delete from tbl_clue
         where id=#{clueId}
@@ -103,32 +161,32 @@ ownerName
 mphone
 state-->
 <!--   名称	 公司	  公司座机	手机 	线索来源 	所有者名称 	线索状态-->
-    <select id="queryClueListByClue" resultType="com.wc.workbench.domain.Clue">
-        SELECT
-        clue.id, clue.fullname, clue.company, mphone, phone, `source`, `user`.name owner, `state`
-        FROM
-        `tbl_clue` clue JOIN `tbl_user` `user` ON clue.owner = user.id
-        <where>
-            <if test="fullname!=null and fullname!=''">
-                fullname = #{fullname}
-            </if>
-            <if test="company!=null and company!=''">
-                and company = #{company}
-            </if>
-            <if test="phone!=null and phone!=''">
-                and phone = #{phone}
-            </if>
-            <if test="source!=null and source!=''">
-                and source = #{source}
-            </if>
-            <if test="owner!=null and owner!=''">
-                and `user`.name = #{owner}
-            </if>
-            <if test="mphone!=null and mphone!=''">
-                and mphone = #{mphone}
-            </if>
-        </where>
-    </select>
+<!--    <select id="queryClueListByClue" resultType="com.wc.workbench.domain.Clue">-->
+<!--        SELECT-->
+<!--        clue.id, clue.fullname, clue.company, mphone, phone, `source`, `user`.name owner, `state`-->
+<!--        FROM-->
+<!--        `tbl_clue` clue JOIN `tbl_user` `user` ON clue.owner = user.id-->
+<!--        <where>-->
+<!--            <if test="fullname!=null and fullname!=''">-->
+<!--                fullname = #{fullname}-->
+<!--            </if>-->
+<!--            <if test="company!=null and company!=''">-->
+<!--                and company = #{company}-->
+<!--            </if>-->
+<!--            <if test="phone!=null and phone!=''">-->
+<!--                and phone = #{phone}-->
+<!--            </if>-->
+<!--            <if test="source!=null and source!=''">-->
+<!--                and source = #{source}-->
+<!--            </if>-->
+<!--            <if test="owner!=null and owner!=''">-->
+<!--                and `user`.name = #{owner}-->
+<!--            </if>-->
+<!--            <if test="mphone!=null and mphone!=''">-->
+<!--                and mphone = #{mphone}-->
+<!--            </if>-->
+<!--        </where>-->
+<!--    </select>-->
 
     <insert id="saveClue">
         insert into tbl_clue
