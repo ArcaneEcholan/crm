@@ -13,22 +13,25 @@
                 `tbl_clue` clue JOIN `tbl_user` `user` ON clue.owner = user.id
             <where>
                 <if test="fullname!=null and fullname!=''">
-                    fullname = #{fullname}
+                    fullname like "%" #{fullname} "%"
                 </if>
                 <if test="company!=null and company!=''">
-                    and company = #{company}
+                    and company like "%" #{company} "%"
                 </if>
                 <if test="phone!=null and phone!=''">
-                    and phone = #{phone}
+                    and phone like "%" #{phone} "%"
                 </if>
                 <if test="source!=null and source!=''">
-                    and source = #{source}
+                    and source like "%" #{source} "%"
                 </if>
                 <if test="owner!=null and owner!=''">
-                    and `user`.name = #{owner}
+                    and `user`.name like "%" #{owner} "%"
                 </if>
                 <if test="mphone!=null and mphone!=''">
-                    and mphone = #{mphone}
+                    and mphone like "%" #{mphone} "%"
+                </if>
+                <if test="state!=null and state!=''">
+                    and state like "%" #{state} "%"
                 </if>
             </where>
             order by clue.createTime desc
@@ -43,22 +46,25 @@
         `tbl_clue` clue JOIN `tbl_user` `user` ON clue.owner = user.id
         <where>
             <if test="fullname!=null and fullname!=''">
-                fullname = #{fullname}
+                fullname like "%" #{fullname} "%"
             </if>
             <if test="company!=null and company!=''">
-                and company = #{company}
+                and company like "%" #{company} "%"
             </if>
             <if test="phone!=null and phone!=''">
-                and phone = #{phone}
+                and phone like "%" #{phone} "%"
             </if>
             <if test="source!=null and source!=''">
-                and source = #{source}
+                and source like "%" #{source} "%"
             </if>
             <if test="owner!=null and owner!=''">
-                and `user`.name = #{owner}
+                and `user`.name like "%" #{owner} "%"
             </if>
             <if test="mphone!=null and mphone!=''">
-                and mphone = #{mphone}
+                and mphone like "%" #{mphone} "%"
+            </if>
+            <if test="state!=null and state!=''">
+                and state like "%" #{state} "%"
             </if>
         </where>
     </select>
