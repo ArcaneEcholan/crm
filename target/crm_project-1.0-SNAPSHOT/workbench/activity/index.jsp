@@ -181,6 +181,10 @@ String base = request.getScheme()
 
 		//点击查询活动
 		$("#searchBtn").click(function () {
+			$("#hidden-name").val($("#search-name").val()),
+			$("#hidden-owner").val($("#search-owner").val()),
+			$("#hidden-startDate").val($("#search-startDate").val()),
+			$("#hidden-endDate").val($("#search-endDate").val()),
 			pageList(1,2);
 		})
 
@@ -209,10 +213,10 @@ String base = request.getScheme()
 			"pageSize":pageSize,
 
             //以下参数来自查询框，可有可无
-			"name":$("#name").val(),
-			"owner":$("#owner").val(),
-			"startTime":$("#startTime").val(),
-			"endTime":$("#endTime").val()
+			"name":$("#hidden-name").val(),
+			"owner":$("#hidden-owner").val(),
+			"startTime":$("#hidden-startDate").val(),
+			"endTime":$("#hidden-endDate").val()
 		},function (data) {
 			//来自服务器：data:{totalCount:总记录数 ,totalPages：总页数， list:[{act1}{act2}{act3}]}
 			//将数据展示在页面上
@@ -254,8 +258,12 @@ String base = request.getScheme()
 </script>
 </head>
 <body>
-<%--<button id="searchBtn1" class="btn btn-default">查询</button>--%>
-<%--<button id = "testBtn"> 测试 </button>--%>
+
+<%--bug:保存查询状态下的查询条件，当查询状态下点击页码分页时，查询条件从隐藏域中获取--%>
+<input type="hidden" id="hidden-name">
+<input type="hidden" id="hidden-owner">
+<input type="hidden" id="hidden-startDate">
+<input type="hidden" id="hidden-endDate">
 
 <!-- 修改市场活动的模态窗口 -->
 <div class="modal fade" id="editActivityModal" role="dialog">
@@ -401,14 +409,14 @@ String base = request.getScheme()
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">名称</div>
-				      <input class="form-control" type="text" id="name"/>
+				      <input class="form-control" type="text" id="search-name"/>
 				    </div>
 				  </div>
 				  
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">所有者</div>
-				      <input class="form-control" type="text" id="owner"/>
+				      <input class="form-control" type="text" id="search-owner"/>
 				    </div>
 				  </div>
 
@@ -416,13 +424,13 @@ String base = request.getScheme()
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">开始日期</div>
-					  <input class="form-control" type="text" id="startTime"/>
+					  <input class="form-control" type="text" id="search-startDate"/>
 				    </div>
 				  </div>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">结束日期</div>
-					  <input class="form-control" type="text" id="endTime">
+					  <input class="form-control" type="text" id="search-endDate">
 				    </div>
 				  </div>
 				  

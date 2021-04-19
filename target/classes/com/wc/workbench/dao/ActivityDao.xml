@@ -40,10 +40,10 @@
         `tbl_user` a JOIN `tbl_activity` b ON a.id = b.owner
         <where>
             <if test="name!=null and name!=''">
-                b.`name` = #{name}
+                b.`name` like "%" #{name} "%"
             </if>
             <if test="owner!=null and owner!=''">
-                and a.`name` = #{owner}
+                and a.`name` like "%" #{owner} "%"
             </if>
             <if test="startTime!=null and startTime!=''">
                 and b.startDate &gt;= #{startTime}
@@ -63,10 +63,10 @@
             `tbl_user` a JOIN `tbl_activity` b ON a.id = b.owner
         <where>
             <if test="name!=null and name!=''">
-                b.`name` = #{name}
+                b.`name` like "%" #{name} "%"
             </if>
             <if test="owner!=null and owner!=''">
-                and a.`name` = #{owner}
+                and a.`name` like "%" #{owner} "%"
             </if>
             <if test="startTime!=null and startTime!=''">
                 and b.startDate &gt;= #{startTime}
@@ -84,7 +84,6 @@
             #{aid}
         </foreach>
     </delete>
-
 
 
     <select id="queryActivityByActivityId" resultType="com.wc.workbench.domain.Activity">

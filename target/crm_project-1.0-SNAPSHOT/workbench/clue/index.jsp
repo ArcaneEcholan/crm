@@ -101,6 +101,15 @@ String base = request.getScheme()
 
 
 		$("#searchBtn").click(function () {
+			$("#hidden-fullname").val($("#search-fullname").val())
+			$("#hidden-company").val($("#search-company").val())
+			$("#hidden-phone").val($("#search-phone").val())
+			$("#hidden-source").val($("#search-source").val())
+			$("#hidden-ownerName").val($("#search-ownerName").val())
+			$("#hidden-mphone").val($("#search-mphone").val())
+			$("#hidden-state").val($("#search-state").val())
+
+
 			pageList(1, 2);
 		})
 
@@ -118,13 +127,13 @@ String base = request.getScheme()
 			"pageSize":pageSize,
 
 			//以下参数来自查询框，可有可无
-			"fullname":$("#search-fullname").val(),
-			"company":$("#search-company").val(),
-			"phone":$("#search-phone").val(),
-			"source":$("#search-source").val(),
-			"owner":$("#search-ownerName").val(),
-			"mphone":$("#search-mphone").val(),
-			"state":$("#search-state").val()
+			"fullname":$("#hidden-fullname").val(),
+			"company":$("#hidden-company").val(),
+			"phone":$("#hidden-phone").val(),
+			"source":$("#hidden-source").val(),
+			"owner":$("#hidden-ownerName").val(),
+			"mphone":$("#hidden-mphone").val(),
+			"state":$("#hidden-state").val()
 		},function (data) {
 			//来自服务器：data:{totalCount:总记录数 ,totalPages：总页数， list:[{clue1}{clue2}{clue3}]}
 			//将数据展示在页面上
@@ -210,6 +219,17 @@ String base = request.getScheme()
 </script>
 </head>
 <body>
+
+<%--解决查询bug--%>
+<input type="hidden" id="hidden-fullname">
+<input type="hidden" id="hidden-company">
+<input type="hidden" id="hidden-phone">
+<input type="hidden" id="hidden-source">
+<input type="hidden" id="hidden-ownerName">
+<input type="hidden" id="hidden-mphone">
+<input type="hidden" id="hidden-state">
+
+
 
 	<!-- 创建线索的模态窗口 -->
 	<div class="modal fade" id="createClueModal" role="dialog">
