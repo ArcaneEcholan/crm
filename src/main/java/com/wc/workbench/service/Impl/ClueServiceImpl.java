@@ -1,5 +1,7 @@
 package com.wc.workbench.service.Impl;
 
+import com.wc.settings.dao.UserDao;
+import com.wc.settings.domain.User;
 import com.wc.utils.DateTimeUtil;
 import com.wc.utils.SqlSessionUtil;
 import com.wc.utils.UUIDUtil;
@@ -8,6 +10,8 @@ import com.wc.workbench.dao.*;
 import com.wc.workbench.domain.*;
 import com.wc.workbench.service.ClueService;
 
+import javax.print.attribute.HashAttributeSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +26,7 @@ public class ClueServiceImpl implements ClueService {
     ContactsActivityRelationDao contactsActivityRelationDao = SqlSessionUtil.getSqlSession().getMapper(ContactsActivityRelationDao.class);
     TranDao tranDao = SqlSessionUtil.getSqlSession().getMapper(TranDao.class);
     TranHistoryDao tranHistoryDao = SqlSessionUtil.getSqlSession().getMapper(TranHistoryDao.class);
-
+    UserDao userDao = SqlSessionUtil.getSqlSession().getMapper(UserDao.class);
 
     public boolean saveClue(Clue clue) {
         System.out.println(clue.getId());
@@ -298,4 +302,21 @@ public class ClueServiceImpl implements ClueService {
         return flag;
     }
 
+    public Map<String, Object> getUserListAndClue(String id) {
+        Clue clue = clueDao.queryClueById(id);
+        List<User> userList = userDao.getUserList();
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("clue", clue);
+        map.put("userList", userList);
+        return map;
+    }
+
+    public boolean updateClue(Clue clue) {
+        return clueDao.updateClueByClueId(clue);
+    }
+
+    public boolean saveRemark(ClueRemark clueRemark) {
+        return clueRemarkDao.saveClueRemark(clueRemark);
+    }
 }

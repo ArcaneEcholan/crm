@@ -36,4 +36,6 @@ public interface ClueDao {
     int queryTotalClueCountByConditions(Map<String, Object> map);
 
     boolean removeClueById(String id);
+
+    boolean updateClueByClueId(Clue clue);
 }

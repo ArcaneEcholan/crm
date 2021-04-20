@@ -3,6 +3,7 @@ package com.wc.workbench.service;
 import com.wc.vo.PageVo;
 import com.wc.workbench.domain.Activity;
 import com.wc.workbench.domain.Clue;
+import com.wc.workbench.domain.ClueRemark;
 import com.wc.workbench.domain.Tran;
 
 import java.util.List;
@@ -32,4 +33,10 @@ public interface ClueService {
     PageVo<Clue> page(Map<String, Object> map);
 
     boolean removeCluesByIds(String[] ids);
+
+    Map<String, Object> getUserListAndClue(String id);
+
+    boolean updateClue(Clue clue);
+
+    boolean saveRemark(ClueRemark clueRemark);
 }

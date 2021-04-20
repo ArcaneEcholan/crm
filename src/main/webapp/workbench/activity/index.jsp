@@ -45,6 +45,8 @@ String base = request.getScheme()
 
 
 		$("#addBtn").click(function () {
+
+
 			$.get("activityServlet",
 					"action=getUserList",
 			function(data) {
@@ -90,17 +92,22 @@ String base = request.getScheme()
         })
 
         //打开修改活动模态窗口
+		/**
+		 * 需要数据：所有用户列表，选中的活动对象
+		 * 后端需要数据：选中的活动id
+		 */
         $("#editBtn").click(function () {
             var checks = $(":input[name=xz]:checked");
 
             if(checks.length == 0) {
                 alert("请选择需要修改的活动！");
             } else if(checks.length == 1){
-                var params = "";
-                params += ("id=" + checks.val());
+				var id = checks.val()
 
-                $.getJSON("activityServlet", params + "&action=openUpdateModal", function (data) {
-
+                $.get("activityServlet", {
+					"action":"openUpdateModal",
+					"id":id
+				}, function (data) {
                     //data.uList用户集合
                     //data.activity对象
                     var html = "<option></option>"
@@ -108,16 +115,19 @@ String base = request.getScheme()
                         html += "<option value='"+n.id+"'>"+n.name+"</option>";
                     })
 
+					//铺所有用户
                     $("#edit-owner").html(html);
 
+                    //铺活动信息
                     $("#edit-name").val(data.activity.name);
                     $("#edit-cost").val(data.activity.cost);
                     $("#edit-startDate").val(data.activity.startDate);
                     $("#edit-endDate").val(data.activity.endDate);
                     $("#edit-describe").val(data.activity.description);
 
+                    //打开模态窗口
                     $("#editActivityModal").modal("show");
-                })
+                },"json")
             } else {
                 alert("一次只能修改一个活动");
             }
@@ -125,8 +135,6 @@ String base = request.getScheme()
 
 		//点击更新修改活动
 		$("#edit-updateBtn").click(function() {
-
-		    // alert($("#edit-owner option:selected").val());
 
 			$.getJSON("activityServlet", {
 						"action":"editActivity",

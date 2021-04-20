@@ -59,8 +59,18 @@ public class ClueRemark {
 	public void setClueId(String clueId) {
 		this.clueId = clueId;
 	}
-	
-	
 
-	
+	@Override
+	public String toString() {
+		return "ClueRemark{" +
+				"id='" + id + '\'' +
+				", noteContent='" + noteContent + '\'' +
+				", createBy='" + createBy + '\'' +
+				", createTime='" + createTime + '\'' +
+				", editBy='" + editBy + '\'' +
+				", editTime='" + editTime + '\'' +
+				", editFlag='" + editFlag + '\'' +
+				", clueId='" + clueId + '\'' +
+				'}';
+	}
 }

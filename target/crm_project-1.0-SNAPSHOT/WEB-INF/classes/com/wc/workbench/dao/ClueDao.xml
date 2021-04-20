@@ -5,6 +5,33 @@
 
 <mapper namespace="com.wc.workbench.dao.ClueDao">
 
+    <update id="updateClueByClueId">
+        update tbl_clue set
+            `owner` = #{owner},
+            `company` = #{company},
+            `fullname` = #{fullname},
+            `appellation` = #{appellation},
+            `state` = #{state},
+            `source` = #{source},
+            `job` = #{job},
+            `email` = #{email},
+            `phone` = #{phone},
+            `website` = #{website},
+            `mphone` = #{mphone},
+            `description` = #{description},
+            `contactSummary` = #{contactSummary},
+            `nextContactTime` = #{nextContactTime},
+            `address` = #{address},
+            `editTime` = #{editTime},
+            `editBy` = #{editBy}
+        where id=#{id}
+    </update>
+
+    <delete id="removeClueById">
+        delete from tbl_clue
+        where id=#{id}
+    </delete>
+
 
     <select id="queryPageCluesByConditions" resultType="com.wc.workbench.domain.Clue">
             SELECT

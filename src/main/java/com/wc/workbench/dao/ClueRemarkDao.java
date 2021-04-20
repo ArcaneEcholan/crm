@@ -9,4 +9,6 @@ public interface ClueRemarkDao {
     List<ClueRemark> queryRemarkByClueId(String clueId);
 
     boolean delByClueId(String clueId);
+
+    boolean saveClueRemark(ClueRemark clueRemark);
 }

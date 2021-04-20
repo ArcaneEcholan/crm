@@ -7,6 +7,7 @@ import com.wc.utils.*;
 import com.wc.vo.PageVo;
 import com.wc.workbench.domain.Activity;
 import com.wc.workbench.domain.Clue;
+import com.wc.workbench.domain.ClueRemark;
 import com.wc.workbench.domain.Tran;
 import com.wc.workbench.service.ClueService;
 import com.wc.workbench.service.Impl.ClueServiceImpl;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class ClueServlet extends BaseServlet {
 
@@ -263,4 +265,59 @@ public class ClueServlet extends BaseServlet {
         PrintJson.printJsonFlag(resp, success);
     }
 
+    /**
+     * 前端需要数据：用户列表，所需线索
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
+    protected void openEditModal(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //需要线索的id
+        String id = req.getParameter("id");
+
+        ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        //返回用户列表和线索
+        Map<String, Object> map = clueService.getUserListAndClue(id);
+
+        //返回结果标记
+        PrintJson.printJsonObj(resp, map);
+    }
+
+    protected void editClue(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Clue clue = MapToBean.copyMapToBean(req.getParameterMap(),new Clue());
+
+        String editTime = DateTimeUtil.getSysTime();
+        String editBy = ((User)req.getSession().getAttribute("user")).getName();
+
+        clue.setEditTime(editTime);
+        clue.setEditBy(editBy);
+
+        ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        boolean success = clueService.updateClue(clue);
+        //返回结果标记
+        PrintJson.printJsonFlag(resp, success);
+    }
+
+    protected void saveRemark (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ClueRemark clueRemark = MapToBean.copyMapToBean(req.getParameterMap(),new ClueRemark());
+
+        String createTime = DateTimeUtil.getSysTime();
+        String createBy = ((User)req.getSession().getAttribute("user")).getName();
+
+        clueRemark.setCreateTime(createTime);
+        clueRemark.setCreateBy(createBy);
+        clueRemark.setEditFlag("0");
+        clueRemark.setId(UUIDUtil.getUUID());
+
+        ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        boolean success = clueService.saveRemark(clueRemark);
+
+        System.out.println(success);
+        //返回结果标记
+        PrintJson.printJsonFlag(resp, success);
+    }
 }

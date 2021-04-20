@@ -23,7 +23,7 @@ String base = request.getScheme()
 
 	//默认情况下取消和保存按钮是隐藏的
 	var cancelAndSaveBtnDefault = true;
-	
+
 	$(function(){
 
 	    //点击按钮修改备注

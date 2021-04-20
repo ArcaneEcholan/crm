@@ -125,6 +125,91 @@ String base = request.getScheme()
 			}, "json");
 		})
 
+		//打开修改窗口
+		/**
+		 * 需要数据：所有用户列表，选中的线索对象
+		 * 后端需要数据：选中的活动id
+		 */
+		$("#edit-openModal").click(function () {
+			var checkes = $(":input[name=xz]:checked");
+
+			if(checkes.length == 0) {
+				alert("请选中要修改的线索");
+			} else if(checkes.length > 1){
+				alert("一次只能修改一个线索");
+			} else if(checkes.length == 1) {
+				var id = checkes.val();
+				$.get("clueServlet", {
+					"action":"openEditModal",
+					"id":id
+				},function (data) {
+
+					//铺用户
+					var html = "";
+					$.each(data.userList, function (i, n) {
+						html += '<option value="'+n.id+'">'+n.name+'</option>';
+					})
+					$("#edit-clueOwner").html(html);
+					$("#edit-clueOwner").val("${sessionScope.user.id}");
+
+
+					//铺活动
+					$("#edit-company").val(data.clue.company);
+					$("#edit-fullname").val(data.clue.fullname);
+					// $("#edit-appellation").val(data.clue.appellation);
+					// $("#edit-status").val(data.clue.status);
+					// $("#edit-source").val(data.clue.source);
+					$("#edit-job").val(data.clue.job);
+					$("#edit-email").val(data.clue.email);
+					$("#edit-phone").val(data.clue.phone);
+					$("#edit-website").val(data.clue.website);
+					$("#edit-mphone").val(data.clue.mphone);
+					$("#edit-description").val(data.clue.description);
+					$("#edit-contactSummary").val(data.clue.contactSummary);
+					$("#edit-nextContactTime").val(data.clue.nextContactTime);
+					$("#edit-address").val(data.clue.address);
+
+					//打开模态窗口
+					$("#editClueModal").modal("show");
+				}, "json")
+			}
+		})
+
+		//点击更新修改活动
+		/**
+		 * 前端需要什么数据：是否修改成功的标志
+		 * 后端需要什么数据：用户填写的新的线索数据,线索的id
+		 */
+		$("#edit-updateBtn").click(function() {
+			$.get("clueServlet", {
+				"action":"editClue",
+
+				"id" : $.trim($(":input[name=xz]:checked").val()),
+				"owner" : $.trim($("#edit-clueOwner").val()),
+				"company" : $.trim($("#edit-company").val()),
+				"fullname" : $.trim($("#edit-fullname").val()),
+				"appellation" : $.trim($("#edit-appellation").val()),
+				"state" : $.trim($("#edit-state").val()),
+				"source" : $.trim($("#edit-source").val()),
+				"job" : $.trim($("#edit-job").val()),
+				"email" : $.trim($("#edit-email").val()),
+				"phone" : $.trim($("#edit-phone").val()),
+				"website" : $.trim($("#edit-website").val()),
+				"mphone" : $.trim($("#edit-mphone").val()),
+				"description" : $.trim($("#edit-description").val()),
+				"contactSummary" : $.trim($("#edit-contactSummary").val()),
+				"nextContactTime" : $.trim($("#edit-nextContactTime").val()),
+				"address" : $.trim($("#edit-address").val()),
+
+			}, function (data) {
+				if(data.success) {
+					$("#editActivityModal").modal("hide");
+					pageList(1,2);
+				} else {
+					alert("修改失败");
+				}
+			},"json")
+		})
 
 		$("#searchBtn").click(function () {
 			$("#hidden-fullname").val($("#search-fullname").val())
@@ -135,14 +220,11 @@ String base = request.getScheme()
 			$("#hidden-mphone").val($("#search-mphone").val())
 			$("#hidden-state").val($("#search-state").val())
 
-
 			pageList(1, 2);
 		})
-
 	});
 
 	function pageList(pageNo,pageSize) {
-
 		$.get("clueServlet", {
 			"action":"page",
 			//发送页码，每页大小
@@ -196,7 +278,6 @@ String base = request.getScheme()
 					pageList(data.currentPage , data.rowsPerPage);
 				}
 			});
-
 		}, "json")
 
 	}
@@ -251,8 +332,6 @@ String base = request.getScheme()
 <input type="hidden" id="hidden-ownerName">
 <input type="hidden" id="hidden-mphone">
 <input type="hidden" id="hidden-state">
-
-
 
 	<!-- 创建线索的模态窗口 -->
 	<div class="modal fade" id="createClueModal" role="dialog">
@@ -393,7 +472,7 @@ String base = request.getScheme()
 			</div>
 		</div>
 	</div>
-	
+
 	<!-- 修改线索的模态窗口 -->
 	<div class="modal fade" id="editClueModal" role="dialog">
 		<div class="modal-dialog" role="document" style="width: 90%;">
@@ -406,14 +485,14 @@ String base = request.getScheme()
 				</div>
 				<div class="modal-body">
 					<form class="form-horizontal" role="form">
-					
+
 						<div class="form-group">
 							<label for="edit-clueOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-clueOwner">
-								  <option>zhangsan</option>
-								  <option>lisi</option>
-								  <option>wangwu</option>
+									<%--								  <option>zhangsan</option>--%>
+									<%--								  <option>lisi</option>--%>
+									<%--								  <option>wangwu</option>--%>
 								</select>
 							</div>
 							<label for="edit-company" class="col-sm-2 control-label">公司<span style="font-size: 15px; color: red;">*</span></label>
@@ -421,25 +500,25 @@ String base = request.getScheme()
 								<input type="text" class="form-control" id="edit-company" value="动力节点">
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label for="edit-call" class="col-sm-2 control-label">称呼</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="edit-call">
-								  <option></option>
-								  <option selected>先生</option>
-								  <option>夫人</option>
-								  <option>女士</option>
-								  <option>博士</option>
-								  <option>教授</option>
+								<select class="form-control" id="edit-appellation">
+									<option></option>
+									<option selected>先生</option>
+									<option>夫人</option>
+									<option>女士</option>
+									<option>博士</option>
+									<option>教授</option>
 								</select>
 							</div>
 							<label for="edit-surname" class="col-sm-2 control-label">姓名<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-surname" value="李四">
+								<input type="text" class="form-control" id="edit-fullname" value="李四">
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label for="edit-job" class="col-sm-2 control-label">职位</label>
 							<div class="col-sm-10" style="width: 300px;">
@@ -450,7 +529,7 @@ String base = request.getScheme()
 								<input type="text" class="form-control" id="edit-email" value="lisi@bjpowernode.com">
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label for="edit-phone" class="col-sm-2 control-label">公司座机</label>
 							<div class="col-sm-10" style="width: 300px;">
@@ -461,7 +540,7 @@ String base = request.getScheme()
 								<input type="text" class="form-control" id="edit-website" value="http://www.bjpowernode.com">
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label for="edit-mphone" class="col-sm-2 control-label">手机</label>
 							<div class="col-sm-10" style="width: 300px;">
@@ -469,51 +548,51 @@ String base = request.getScheme()
 							</div>
 							<label for="edit-status" class="col-sm-2 control-label">线索状态</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="edit-status">
-								  <option></option>
-								  <option>试图联系</option>
-								  <option>将来联系</option>
-								  <option selected>已联系</option>
-								  <option>虚假线索</option>
-								  <option>丢失线索</option>
-								  <option>未联系</option>
-								  <option>需要条件</option>
+								<select class="form-control" id="edit-state">
+									<option></option>
+									<option>试图联系</option>
+									<option>将来联系</option>
+									<option selected>已联系</option>
+									<option>虚假线索</option>
+									<option>丢失线索</option>
+									<option>未联系</option>
+									<option>需要条件</option>
 								</select>
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label for="edit-source" class="col-sm-2 control-label">线索来源</label>
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-source">
-								  <option></option>
-								  <option selected>广告</option>
-								  <option>推销电话</option>
-								  <option>员工介绍</option>
-								  <option>外部介绍</option>
-								  <option>在线商场</option>
-								  <option>合作伙伴</option>
-								  <option>公开媒介</option>
-								  <option>销售邮件</option>
-								  <option>合作伙伴研讨会</option>
-								  <option>内部研讨会</option>
-								  <option>交易会</option>
-								  <option>web下载</option>
-								  <option>web调研</option>
-								  <option>聊天</option>
+									<option></option>
+									<option selected>广告</option>
+									<option>推销电话</option>
+									<option>员工介绍</option>
+									<option>外部介绍</option>
+									<option>在线商场</option>
+									<option>合作伙伴</option>
+									<option>公开媒介</option>
+									<option>销售邮件</option>
+									<option>合作伙伴研讨会</option>
+									<option>内部研讨会</option>
+									<option>交易会</option>
+									<option>web下载</option>
+									<option>web调研</option>
+									<option>聊天</option>
 								</select>
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label for="edit-describe" class="col-sm-2 control-label">描述</label>
 							<div class="col-sm-10" style="width: 81%;">
-								<textarea class="form-control" rows="3" id="edit-describe">这是一条线索的描述信息</textarea>
+								<textarea class="form-control" rows="3" id="edit-description"></textarea>
 							</div>
 						</div>
-						
+
 						<div style="height: 1px; width: 103%; background-color: #D5D5D5; left: -13px; position: relative;"></div>
-						
+
 						<div style="position: relative;top: 15px;">
 							<div class="form-group">
 								<label for="edit-contactSummary" class="col-sm-2 control-label">联系纪要</label>
@@ -528,23 +607,23 @@ String base = request.getScheme()
 								</div>
 							</div>
 						</div>
-						
+
 						<div style="height: 1px; width: 103%; background-color: #D5D5D5; left: -13px; position: relative; top : 10px;"></div>
 
-                        <div style="position: relative;top: 20px;">
-                            <div class="form-group">
-                                <label for="edit-address" class="col-sm-2 control-label">详细地址</label>
-                                <div class="col-sm-10" style="width: 81%;">
-                                    <textarea class="form-control" rows="1" id="edit-address">北京大兴区大族企业湾</textarea>
-                                </div>
-                            </div>
-                        </div>
+						<div style="position: relative;top: 20px;">
+							<div class="form-group">
+								<label for="edit-address" class="col-sm-2 control-label">详细地址</label>
+								<div class="col-sm-10" style="width: 81%;">
+									<textarea class="form-control" rows="1" id="edit-address">北京大兴区大族企业湾</textarea>
+								</div>
+							</div>
+						</div>
 					</form>
-					
+
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">更新</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" id="edit-updateBtn">更新</button>
 				</div>
 			</div>
 		</div>
@@ -653,11 +732,11 @@ String base = request.getScheme()
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 40px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
 				  <button type="button" class="btn btn-primary" data-toggle="modal" id="create-addBtn"><span class="glyphicon glyphicon-plus"></span> 创建</button>
-				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editClueModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
+				  <button type="button" class="btn btn-default" data-toggle="modal" id="edit-openModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
 				  <button type="button" class="btn btn-danger" id="remove-delBtn"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
-				
-				
+
+
 			</div>
 			<div style="position: relative;top: 50px;">
 				<table class="table table-hover">
