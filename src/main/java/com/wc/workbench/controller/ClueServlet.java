@@ -302,22 +302,40 @@ public class ClueServlet extends BaseServlet {
     }
 
     protected void saveRemark (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //将参数封装成javabean
         ClueRemark clueRemark = MapToBean.copyMapToBean(req.getParameterMap(),new ClueRemark());
 
-        String createTime = DateTimeUtil.getSysTime();
-        String createBy = ((User)req.getSession().getAttribute("user")).getName();
+        String createTime = DateTimeUtil.getSysTime();                                 //创建时间为现在时间
+        String createBy = ((User)req.getSession().getAttribute("user")).getName();  //创建人为当前登录用户
 
+        clueRemark.setId(UUIDUtil.getUUID());       //id是随机生成
+        clueRemark.setEditFlag("0");                //由于第一次生成，所以没有修改，修改标志设置为0
         clueRemark.setCreateTime(createTime);
         clueRemark.setCreateBy(createBy);
-        clueRemark.setEditFlag("0");
-        clueRemark.setId(UUIDUtil.getUUID());
 
         ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
 
+        //调用业务层执行保存操作
         boolean success = clueService.saveRemark(clueRemark);
 
-        System.out.println(success);
         //返回结果标记
         PrintJson.printJsonFlag(resp, success);
+    }
+
+    /**
+     * 后端需要什么：一个线索id
+     * 后端需要返回什么：该线索对应的备注表，以及线索对象
+     */
+    protected void showClueRemarkList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //获取线索id
+        String clueId = req.getParameter("clueId");
+
+        ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        //前端需要线索和关联的备注表
+        Map<String, Object> map = clueService.showClueRemarkList(clueId);
+
+        //返回结果
+        PrintJson.printJsonObj(resp, map);
     }
 }

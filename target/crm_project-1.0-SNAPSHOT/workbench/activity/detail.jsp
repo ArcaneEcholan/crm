@@ -75,7 +75,7 @@ String base = request.getScheme()
             }, function (data) {
                 if(data.success){
                     var html = "";
-                    html += '<div id="' + data.activityRemark.id + '" class="remarkDiv" style="height: 60px;">';
+                    html += '<div  id="' + data.activityRemark.id + '" class="remarkDiv" style="height: 60px;">';
                     html += '<img title="zhangsan" src="image/user-thumbnail.png" style="width: 30px; height:30px;">';
                     html += '<div style="position: relative; top: -40px; left: 40px;" >';
                     html += '<h5 id="e' +n.id+ '">'+data.activityRemark.noteContent+'</h5>';
@@ -96,7 +96,6 @@ String base = request.getScheme()
 
             })
         })
-
 
 		$("#remark").focus(function(){
 			if(cancelAndSaveBtnDefault){

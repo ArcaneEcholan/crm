@@ -18,6 +18,11 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 	var cancelAndSaveBtnDefault = true;
 	
 	$(function(){
+
+		//页面加载完毕即显示备注表
+		showClueRemarkList();
+
+
 		/**
 		 * 添加备注
 		 * 前端需要什么：保存成功标记
@@ -30,9 +35,8 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				"clueId":"${clue.id}",
 				"noteContent":$("#remark").val()
 			}, function (data) {
-				if(date.success) {
-					alert("添加成功");
-					// showClueList()
+				if(data.success) {
+					showClueRemarkList()
 				} else {
 					alert("添加失败")
 				}
@@ -73,6 +77,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		$(".myHref").mouseout(function(){
 			$(this).children("span").css("color","#E6E6E6");
 		});
+
 
 		//页面加载完毕后，取出关联的市场活动信息列表
 		showActivityList();
@@ -205,7 +210,47 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 		})
 
+
+
 	});
+
+
+	/**
+	 * 显示线索备注列表，每次页面加载后执行
+	 * 前端需要什么：线索的备注列表（数组），线索对象
+	 * 后端需要什么：当前线索的Id号，作为外键查找备注
+	 */
+	function showClueRemarkList() {
+		$.get("clueServlet",{
+			"action":"showClueRemarkList",
+
+			"clueId":"${clue.id}"
+		}, function (data) {
+			var company = data.company;
+			var clue = data.clue;
+			//铺备注列表
+			html = "";
+			$.each(data.clueRemarkList, function (i, n) {
+				html += ' <div name="firstRemarks" id="' + n.id + '" class="remarkDiv" style="height: 60px;">';
+				html += '<img title="zhangsan" src="image/user-thumbnail.png" style="width: 30px; height:30px;">'
+				html += '<div style="position: relative; top: -40px; left: 40px;" >'
+				//备注内容
+				html += ' <h5>'+n.noteContent+'</h5>'
+				//线索名字，称呼，公司，（创建时间，创建人\修改时间，修改人）
+				html += ' <font color="gray">线索</font> <font color="gray">-</font> <b>'+clue.fullname+clue.appellation+'-'+clue.company+'</b> <small style="color: gray;"> '+ (n.editFlag==0 ? n.createTime + " 由" + n.createBy : n.editTime + " 由" + n.editBy) +'</small>'
+				html += ' <div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">'
+				html += ' <a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>'
+				html += ' &nbsp;&nbsp;&nbsp;&nbsp;'
+				html += ' <a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>'
+				html += ' </div>'
+				html += ' </div>'
+				html += ' </div>'
+			})
+			//将原来的备注表删除，再将后端返回的备注表添加即可，这样是防止线索表的异常叠加
+			$("div[name=firstRemarks]").remove();
+			$("#remarkDiv").before(html);
+		}, "json")
+	}
 
 	function showActivityList() {
 
@@ -613,40 +658,19 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
             <div style="height: 1px; width: 850px; background: #D5D5D5; position: relative; top: -20px;"></div>
         </div>
 	</div>
-	
+
 	<!-- 备注 -->
 	<div style="position: relative; top: 40px; left: 40px;">
 		<div class="page-header">
 			<h4>备注</h4>
 		</div>
-		
-		<!-- 备注1 -->
-		<div class="remarkDiv" style="height: 60px;">
-			<img title="zhangsan" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
-			<div style="position: relative; top: -40px; left: 40px;" >
-				<h5>哎呦！</h5>
-				<font color="gray">线索</font> <font color="gray">-</font> <b>李四先生-动力节点</b> <small style="color: gray;"> 2017-01-22 10:10:10 由zhangsan</small>
-				<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">
-					<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
-					&nbsp;&nbsp;&nbsp;&nbsp;
-					<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>
-				</div>
-			</div>
-		</div>
-		
-		<!-- 备注2 -->
-		<div class="remarkDiv" style="height: 60px;">
-			<img title="zhangsan" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
-			<div style="position: relative; top: -40px; left: 40px;" >
-				<h5>呵呵！</h5>
-				<font color="gray">线索</font> <font color="gray">-</font> <b>李四先生-动力节点</b> <small style="color: gray;"> 2017-01-22 10:20:10 由zhangsan</small>
-				<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">
-					<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
-					&nbsp;&nbsp;&nbsp;&nbsp;
-					<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>
-				</div>
-			</div>
-		</div>
+
+<%--		由showClueList铺数据--%>
+
+
+
+
+
 		
 		<div id="remarkDiv" style="background-color: #E6E6E6; width: 870px; height: 90px;">
 			<form role="form" style="position: relative;top: 10px; left: 10px;">

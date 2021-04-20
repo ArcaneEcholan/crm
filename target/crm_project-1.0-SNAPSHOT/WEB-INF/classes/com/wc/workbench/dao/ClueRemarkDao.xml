@@ -26,6 +26,7 @@
     <select id="queryRemarkByClueId" resultType="com.wc.workbench.domain.ClueRemark">
         select * from tbl_clue_remark
         where clueId=#{clueId}
+        order by createTime desc
     </select>
 
     <delete id="delByClueId">

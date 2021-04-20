@@ -319,4 +319,16 @@ public class ClueServiceImpl implements ClueService {
     public boolean saveRemark(ClueRemark clueRemark) {
         return clueRemarkDao.saveClueRemark(clueRemark);
     }
+
+    public Map<String, Object> showClueRemarkList(String clueId) {
+        //获取线索公司
+        Clue clue = clueDao.queryClueById(clueId);
+        //获取备注列表
+        List<ClueRemark> clueRemarkList = clueRemarkDao.queryRemarkByClueId(clueId);
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("clue", clue);
+        map.put("clueRemarkList", clueRemarkList);
+        return map;
+    }
 }
