@@ -250,15 +250,17 @@ public class ClueServlet extends BaseServlet {
     }
 
 
-    protected void test(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void removeClues(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //获取删除id参数
+        String[] ids = req.getParameterValues("id");
 
-        System.out.println("you art in");
+        ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        //删除记录
+        boolean success = clueService.removeCluesByIds(ids);
+
+        //返回结果标记
+        PrintJson.printJsonFlag(resp, success);
     }
-
-
-
-
-
-
 
 }

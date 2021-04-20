@@ -5,6 +5,11 @@
 
 <mapper namespace="com.wc.workbench.dao.ClueDao">
 
+    <delete id="removeClueById">
+        delete from tbl_clue
+        where id=#{id}
+    </delete>
+
 
     <select id="queryPageCluesByConditions" resultType="com.wc.workbench.domain.Clue">
             SELECT

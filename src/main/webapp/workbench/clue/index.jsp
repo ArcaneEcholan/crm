@@ -31,6 +31,32 @@ String base = request.getScheme()
 <script type="text/javascript">
 
 	$(function(){
+		//删除
+		$("#remove-delBtn").click(function () {
+
+			//将用户选中的所有线索的id拼串
+			var $checkedToDel = $(":input[name=xz]:checked");	//获取用户选中的线索
+
+			var params = "";									//拼串
+			for(var i = 0; i < $checkedToDel.length; i++) {
+				var id = $($checkedToDel[i]).val();
+				params += ("id=" + id);
+				if(i < $checkedToDel.length - 1) {
+					params += "&";
+				}
+			}
+
+			//发送请求
+			$.post("clueServlet","action=removeClues&" + params,function(data) {
+				//data:{success:true/false}
+				if(data.success) {
+					pageList(1,2);
+				} else {
+					alert("删除失败");
+				}
+			}, "json")
+		})
+
 		//展示线索列表
 		pageList(1, 2);
 
@@ -113,10 +139,7 @@ String base = request.getScheme()
 			pageList(1, 2);
 		})
 
-
 	});
-
-
 
 	function pageList(pageNo,pageSize) {
 
@@ -631,7 +654,7 @@ String base = request.getScheme()
 				<div class="btn-group" style="position: relative; top: 18%;">
 				  <button type="button" class="btn btn-primary" data-toggle="modal" id="create-addBtn"><span class="glyphicon glyphicon-plus"></span> 创建</button>
 				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editClueModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
-				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
+				  <button type="button" class="btn btn-danger" id="remove-delBtn"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
 				
 				

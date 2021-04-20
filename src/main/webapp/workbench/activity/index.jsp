@@ -99,8 +99,6 @@ String base = request.getScheme()
                 var params = "";
                 params += ("id=" + checks.val());
 
-                // alert(params);
-
                 $.getJSON("activityServlet", params + "&action=openUpdateModal", function (data) {
 
                     //data.uList用户集合

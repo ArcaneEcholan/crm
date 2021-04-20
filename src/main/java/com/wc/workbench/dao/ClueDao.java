@@ -34,4 +34,6 @@ public interface ClueDao {
     List<Clue> queryPageCluesByConditions(Map<String, Object> map);
 
     int queryTotalClueCountByConditions(Map<String, Object> map);
+
+    boolean removeClueById(String id);
 }

@@ -30,4 +30,6 @@ public interface ClueService {
     boolean convert(String clueId, Tran transaction, String createBy);
 
     PageVo<Clue> page(Map<String, Object> map);
+
+    boolean removeCluesByIds(String[] ids);
 }

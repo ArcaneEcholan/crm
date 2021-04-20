@@ -286,4 +286,16 @@ public class ClueServiceImpl implements ClueService {
         return new PageVo<Clue>(totalCount, totalPages, clueList);
     }
 
+    public boolean removeCluesByIds(String[] ids) {
+        boolean flag = true;
+
+        for (int i = 0; i < ids.length; i++) {
+            if(!clueDao.removeClueById(ids[i])) {
+                flag = false;
+            }
+        }
+
+        return flag;
+    }
+
 }
