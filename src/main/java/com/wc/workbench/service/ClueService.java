@@ -41,4 +41,6 @@ public interface ClueService {
     boolean saveRemark(ClueRemark clueRemark);
 
     Map<String, Object> showClueRemarkList(String clueId);
+
+    boolean editClueRemarkContentByRemarkId(ClueRemark clueRemark);
 }

@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class ClueServlet extends BaseServlet {
 
@@ -337,5 +338,28 @@ public class ClueServlet extends BaseServlet {
 
         //返回结果
         PrintJson.printJsonObj(resp, map);
+    }
+
+    /**
+     * 后端需要什么：一个线索id
+     * 后端需要返回什么：该线索对应的备注表，以及线索对象
+     */
+    protected void editClueRemarkContentByRemarkId(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //获取线索id和内容
+        ClueRemark clueRemark = MapToBean.copyMapToBean(req.getParameterMap(), new ClueRemark());
+
+        clueRemark.setEditTime(DateTimeUtil.getSysTime());
+        clueRemark.setEditBy((String) req.getSession().getAttribute("username"));
+        clueRemark.setEditFlag("1");
+
+        System.out.println(clueRemark);
+
+        ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        //前端需要线索和关联的备注表
+        boolean success = clueService.editClueRemarkContentByRemarkId(clueRemark);
+        System.out.println(success);
+        //返回结果
+        PrintJson.printJsonFlag(resp, success);
     }
 }

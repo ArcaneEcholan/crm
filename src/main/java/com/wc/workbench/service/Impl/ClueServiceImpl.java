@@ -331,4 +331,9 @@ public class ClueServiceImpl implements ClueService {
         map.put("clueRemarkList", clueRemarkList);
         return map;
     }
+
+    public boolean editClueRemarkContentByRemarkId(ClueRemark clueRemark) {
+
+        return clueRemarkDao.updateClueRemarkContentByRemarkId(clueRemark);
+    }
 }

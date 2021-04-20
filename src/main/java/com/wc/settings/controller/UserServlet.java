@@ -28,6 +28,8 @@ public class UserServlet extends BaseServlet {
             User user = userService.login(username, password, ip);
             //将用户存入session域对象中
             req.getSession().setAttribute("user", user);
+            //将用户姓名存入session域对象中，方便取用
+            req.getSession().setAttribute("username", user.getName());
 
             System.out.println("login end");
 

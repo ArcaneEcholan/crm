@@ -1,19 +1,23 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: wc
-  Date: 2021/4/20
-  Time: 14:10
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/";
+%>
 <html>
 <head>
+    <base href="<%=basePath%>">
     <title>Title</title>
-</head>
-<body>
+    <script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            console.log($("textarea").val());
+        })
 
-<select>
-    <option></option>
-</select>
+    </script>
+</head>
+
+<body>
+<textarea rows="10" cols="30" value="那活动经费">我是一个文本框。</textarea>
+
+
 </body>
 </html>

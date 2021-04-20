@@ -18,10 +18,37 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 	var cancelAndSaveBtnDefault = true;
 	
 	$(function(){
+		/**
+		 * 修改线索备注
+		 * 前端需要做什么：修改完后刷新备注列表
+		 * 后端需要什么：当前线索的id，修改后的内容
+		 */
+		$("#updateRemarkBtn").click(function () {
+			$.get("clueServlet",{
+				"action":"editClueRemarkContentByRemarkId",
+
+				"id":$("#clueRemarkId").val(),
+				"noteContent":$("#noteContent").val()
+			}, function (data) {
+				if(data.success) {
+					$("#editRemarkModal").modal("hide");
+					showClueRemarkList();
+				} else {
+					alert("修改失败");
+				}
+			}, "json")
+		})
+
+
+		$("#remarkBody").on("mouseover",".remarkDiv",function(){
+			$(this).children("div").children("div").show();
+		})
+		$("#remarkBody").on("mouseout",".remarkDiv",function(){
+			$(this).children("div").children("div").hide();
+		})
 
 		//页面加载完毕即显示备注表
 		showClueRemarkList();
-
 
 		/**
 		 * 添加备注
@@ -214,7 +241,6 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 	});
 
-
 	/**
 	 * 显示线索备注列表，每次页面加载后执行
 	 * 前端需要什么：线索的备注列表（数组），线索对象
@@ -238,10 +264,10 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				html += ' <h5>'+n.noteContent+'</h5>'
 				//线索名字，称呼，公司，（创建时间，创建人\修改时间，修改人）
 				html += ' <font color="gray">线索</font> <font color="gray">-</font> <b>'+clue.fullname+clue.appellation+'-'+clue.company+'</b> <small style="color: gray;"> '+ (n.editFlag==0 ? n.createTime + " 由" + n.createBy : n.editTime + " 由" + n.editBy) +'</small>'
-				html += ' <div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">'
-				html += ' <a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>'
+				html += ' <div id="editAndDelRemarkBtn" style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">'
+				html += ' <a class="myHref" href="javascript:void(0);"><span onclick="editClueRemark(\''+n.id+'\')"  id="edit-updateRemark" class="glyphicon glyphicon-edit" style="font-size: 20px; color: #ff0000;"></span></a>'
 				html += ' &nbsp;&nbsp;&nbsp;&nbsp;'
-				html += ' <a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>'
+				html += ' <a class="myHref" href="javascript:void(0);"><span onclick="removeClueRemark(\''+n.id+'\')" id="remove-delRemark" class="glyphicon glyphicon-remove" style="font-size: 20px; color: #ff0000;"></span></a>'
 				html += ' </div>'
 				html += ' </div>'
 				html += ' </div>'
@@ -250,6 +276,19 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			$("div[name=firstRemarks]").remove();
 			$("#remarkDiv").before(html);
 		}, "json")
+	}
+
+
+	/**
+	 * 打开修改备注的模态窗口
+	 */
+	function editClueRemark(id) {
+		//将备注内容填入模态窗口
+		var noteContent = $("#" + id +" h5").html();
+		$("#noteContent").val(noteContent);
+		//将线索id埋入隐藏域，方便修改
+		$("#clueRemarkId").val(id);
+		$("#editRemarkModal").modal("show");
 	}
 
 	function showActivityList() {
@@ -343,6 +382,36 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 </head>
 <body>
+
+	<!-- 修改市场活动备注的模态窗口 -->
+	<div class="modal fade" id="editRemarkModal" role="dialog">
+		<%-- 备注的id --%>
+		<input type="hidden" id="clueRemarkId">
+		<div class="modal-dialog" role="document" style="width: 40%;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">×</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">修改备注</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal" role="form">
+						<div class="form-group">
+							<label for="edit-describe" class="col-sm-2 control-label">内容</label>
+							<div class="col-sm-10" style="width: 81%;">
+								<textarea class="form-control" rows="3" id="noteContent"></textarea>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary" id="updateRemarkBtn">更新</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<!-- 关联市场活动的模态窗口 -->
 	<div class="modal fade" id="bundModal" role="dialog">
@@ -660,13 +729,12 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 	</div>
 
 	<!-- 备注 -->
-	<div style="position: relative; top: 40px; left: 40px;">
+	<div id="remarkBody" style="position: relative; top: 40px; left: 40px;" >
 		<div class="page-header">
 			<h4>备注</h4>
 		</div>
 
 <%--		由showClueList铺数据--%>
-
 
 
 
