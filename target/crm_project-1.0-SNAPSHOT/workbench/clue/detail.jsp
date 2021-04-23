@@ -86,11 +86,10 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			}
 		})
 
-
-
-
-		//打开关联活动模态窗口
-		//前端需要数据：数据库中所有 没绑定到此线索的 活动
+		/**
+		 * 打开关联活动模态窗口
+		 * 前端需要数据：数据库中所有 没绑定到此线索的 活动
+		 */
 		$("#openBundModal").click(function() {
 			$.get("clueServlet",{
 				"action":"getAllNotBundedActivities"
@@ -109,7 +108,6 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			}, "json")
 			$("#bundModal").modal("show");
 		})
-
 
 		//为aname绑定搜索操作
 		//前端需要数据：符合查询条件的结果集（活动列表）

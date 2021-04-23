@@ -37,7 +37,7 @@
                   SELECT activityId
                   FROM `tbl_clue_activity_relation`
                   WHERE clueId="4c314d07892e4c179faddd70ed6ff1b6"
-              )) act JOIN tbl_user `user` ON act.owner=`user`.id
+               ) act JOIN tbl_user `user` ON act.owner=`user`.id
         where act.name like "%" #{aname} "%"
     </select>
 
