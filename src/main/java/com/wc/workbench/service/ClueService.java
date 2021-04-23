@@ -1,10 +1,7 @@
 package com.wc.workbench.service;
 
 import com.wc.vo.PageVo;
-import com.wc.workbench.domain.Activity;
-import com.wc.workbench.domain.Clue;
-import com.wc.workbench.domain.ClueRemark;
-import com.wc.workbench.domain.Tran;
+import com.wc.workbench.domain.*;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +17,6 @@ public interface ClueService {
     boolean delRelationByClueIdAndActivityId(Map<String, String> map);
 
     List<Activity> getAllActivities();
-
 
     List<Activity> getAllActivitiesByNameAndNotRelatedWithClue(Map<String, String> map);
 
@@ -43,4 +39,13 @@ public interface ClueService {
     Map<String, Object> showClueRemarkList(String clueId);
 
     boolean editClueRemarkContentByRemarkId(ClueRemark clueRemark);
+
+    boolean removeClueRemarkByRemarkId(String id);
+
+    List<Activity> getActivitiesByName(String aname);
+
+    boolean bundActs(List<ClueActivityRelation> list);
+
+    List<Activity> getAllRelatedActsByClueId(String clueId);
+
 }

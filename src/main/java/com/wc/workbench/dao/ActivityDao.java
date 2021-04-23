@@ -26,4 +26,8 @@ public interface ActivityDao {
     boolean updateActivity(Activity activity);
 
     Activity queryActivityDetail(String id);
+
+    List<Activity> queryActivityByName(String aname);
+
+    List<Activity> getAllRelatedActsByClueId(String clueId);
 }

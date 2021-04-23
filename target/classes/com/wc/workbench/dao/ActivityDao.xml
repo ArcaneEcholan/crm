@@ -5,6 +5,35 @@
 
 <mapper namespace="com.wc.workbench.dao.ActivityDao">
 
+<!--所有关联的活动列表（名称   开始日期	结束日期	 所有者）-->
+    <select id="getAllRelatedActsByClueId" resultType="com.wc.workbench.domain.Activity">
+        SELECT
+            act.name name,
+            `user`.name `owner` ,
+            startDate  ,
+            endDate
+        FROM `tbl_activity` act JOIN `tbl_clue_activity_relation` relation ON act.id=`relation`.activityId
+        join tbl_user user on user.id=act.owner
+        where clueId=#{clueId}
+    </select>
+
+    <select id="queryActivityByName" resultType="com.wc.workbench.domain.Activity">
+        SELECT
+            act.id id,
+            `user`.name `owner` ,
+            act.`name` `name` ,
+            startDate  ,
+            endDate    ,
+            cost       ,
+            description,
+            act.createTime createTime,
+            act.createBy createBy  ,
+            act.editTime editTime  ,
+            act.editBy editBy
+        FROM `tbl_activity` act JOIN tbl_user `user` ON act.owner=`user`.id
+        where act.name like "%" #{aname} "%"
+    </select>
+
     <select id="queryAllUsers" resultType="com.wc.settings.domain.User">
         select * from `tbl_user`
     </select>

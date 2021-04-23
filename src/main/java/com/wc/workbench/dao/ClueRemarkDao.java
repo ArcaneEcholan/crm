@@ -13,4 +13,6 @@ public interface ClueRemarkDao {
     boolean saveClueRemark(ClueRemark clueRemark);
 
     boolean updateClueRemarkContentByRemarkId(ClueRemark clueRemark);
+
+    boolean delByClueRemarkId(String id);
 }

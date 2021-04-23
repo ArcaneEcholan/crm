@@ -1,6 +1,6 @@
 package com.wc.workbench.domain;
 
-public class ClueRemark {
+public class ClueRemark implements Comparable<ClueRemark>{
 	
 	private String id;
 	private String noteContent;
@@ -72,5 +72,23 @@ public class ClueRemark {
 				", editFlag='" + editFlag + '\'' +
 				", clueId='" + clueId + '\'' +
 				'}';
+	}
+
+
+	public int compareTo(ClueRemark o) {
+		String time1 = null;
+		String time2 = null;
+		if("0".equals(editFlag)) {
+			time1 = createTime;
+		} else {
+			time1 = editTime;
+		}
+		if("0".equals(o.editFlag)) {
+			time2 = o.createTime;
+		} else {
+			time2 = o.editTime;
+		}
+
+		return time1.compareTo(time2);
 	}
 }

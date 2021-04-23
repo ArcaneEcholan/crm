@@ -16,8 +16,179 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 	//默认情况下取消和保存按钮是隐藏的
 	var cancelAndSaveBtnDefault = true;
-	
+
+	<%--//为关联按钮绑定事件，执行关联表的添加操作--%>
+	<%--$("#bundBtn").click(function () {--%>
+	<%--	var $xz = $("input[name=xz]:checked");--%>
+	<%--	if($xz.length==0){--%>
+	<%--		alert("请选择需要关联的市场活动");--%>
+	<%--	}else{--%>
+	<%--		var param = "cid=${c.id}&";--%>
+	<%--		for(var i=0;i<$xz.length;i++){--%>
+	<%--			param += "aid="+$($xz[i]).val();--%>
+	<%--			if(i<$xz.length-1){--%>
+	<%--				param += "&";--%>
+	<%--			}--%>
+	<%--		}--%>
+	<%--		$.ajax({--%>
+	<%--			url : "workbench/clue/bund.do",--%>
+	<%--			data : param,--%>
+	<%--			type : "post",--%>
+	<%--			dataType : "json",--%>
+	<%--			success : function (data) {--%>
+	<%--				if(data.success){--%>
+
+	<%--					//关联成功--%>
+	<%--					//刷新关联市场活动的列表--%>
+	<%--					showActivityList();--%>
+
+	<%--					//清除搜索框中的信息  复选框中的√干掉 清空activitySearchBody中的内容--%>
+
+	<%--					//关闭模态窗口--%>
+	<%--					$("#bundModal").modal("hide");--%>
+	<%--				}else{--%>
+	<%--					alert("关联市场活动失败");--%>
+	<%--				}--%>
+	<%--			}--%>
+	<%--		})--%>
+	<%--	}--%>
+	<%--})--%>
 	$(function(){
+
+		//绑定选中的活动（多个）
+		//前端需要什么：关联成功与否标志
+		//前端需要做：成功则刷新活动列表关闭窗口，失败提示
+		//后端需要什么：需要产生关联的活动id号，当前线索id号
+		$("#bundBtn").click(function (){
+			//获取选中的id号
+			var $checked = $(":input[name=xz]:checked");
+			if($checked.length==0)  {
+				alert("请选择关联的活动")
+			} else {
+				var param = ""
+				for(var i = 0; i < $checked.length; i++) {
+					param += ("id=" + $($checked[i]).val());
+					if(i < $checked.length - 1) {
+						param += "&";
+					}
+				}
+
+				$.post("clueServlet", "action=bundActs&clueId=${clue.id}&" + param, function(data) {
+					if(data.success) {
+						alert("关联成功");
+						$("#bundModal").modal("hide")
+						showRelatedActivityList();
+					} else{
+						alert("关联失败");
+						$("#bundModal").modal("hide")
+					}
+				},"json")
+			}
+		})
+
+
+
+
+		//打开关联活动模态窗口
+		//前端需要数据：数据库中所有活动
+		$("#openBundModal").click(function() {
+			$.get("clueServlet",{
+				"action":"getAllActivities"
+			}, function(data) {
+				var html="";
+				$.each(data, function (i,n) {
+					html += '<tr>';
+					html += '<td><input type="checkbox" name="xz" value="'+n.id+'"/></td>';
+					html += '<td>'+n.name+'</td>';
+					html += '<td>'+n.startDate+'</td>';
+					html += '<td>'+n.endDate+'</td>';
+					html += '<td>'+n.owner+'</td>';
+					html += '</tr>';
+				})
+				$("#activitySearchBody").html(html);
+			}, "json")
+			$("#bundModal").modal("show");
+		})
+
+		<%--//为关联市场活动模态窗口中的 搜索框 绑定事件，通过触发回车键，查询并展现所需市场活动列表--%>
+		<%--$("#aname").keydown(function (event) {--%>
+
+		<%--	//如果是回车键--%>
+		<%--	if(event.keyCode==13){--%>
+
+		<%--		//alert("查询并展现市场活动列表");--%>
+
+		<%--		$.ajax({--%>
+
+		<%--			url : "workbench/clue/getActivityListByNameAndNotByClueId.do",--%>
+		<%--			data : {--%>
+
+		<%--				"aname" : $.trim($("#aname").val()),--%>
+		<%--				"clueId" : "${c.id}"--%>
+
+		<%--			},--%>
+		<%--			type : "get",--%>
+		<%--			dataType : "json",--%>
+		<%--			success : function (data) {--%>
+
+		<%--				/*--%>
+
+		<%--					data--%>
+		<%--						[{市场活动1},{2},{3}]--%>
+
+		<%--				 */--%>
+		<%--				var html = "";--%>
+
+		<%--				$.each(data,function (i,n) {--%>
+
+		<%--					html += '<tr>';--%>
+		<%--					html += '<td><input type="checkbox" name="xz" value="'+n.id+'"/></td>';--%>
+		<%--					html += '<td>'+n.name+'</td>';--%>
+		<%--					html += '<td>'+n.startDate+'</td>';--%>
+		<%--					html += '<td>'+n.endDate+'</td>';--%>
+		<%--					html += '<td>'+n.owner+'</td>';--%>
+		<%--					html += '</tr>';--%>
+		<%--				})--%>
+		<%--				$("#activitySearchBody").html(html);--%>
+		<%--			}--%>
+		<%--		})--%>
+		<%--		//展现完列表后，记得将模态窗口默认的回车行为禁用掉--%>
+		<%--		return false;--%>
+		<%--	}--%>
+
+		<%--})--%>
+
+		//为aname绑定搜索操作
+		//前端需要数据：符合查询条件的结果集（活动列表）
+		//后端需要数据：查询条件（名称）
+		$("#aname").keydown(function (event) {
+			if (event.keyCode == 13){
+				$.get("clueServlet", {
+					"action": "getActivitiesByName",
+
+					"aname": $(this).val()
+				}, function (data) {
+					$("#activitySearchBody").empty();
+					var html = "";
+					$.each(data, function (i, n) {
+						html += '<tr>';
+						html += '<td><input type="checkbox" name="xz" value="' + n.id + '"/></td>';
+						html += '<td>' + n.name + '</td>';
+						html += '<td>' + n.startDate + '</td>';
+						html += '<td>' + n.endDate + '</td>';
+						html += '<td>' + n.owner + '</td>';
+						html += '</tr>';
+					})
+					$("#activitySearchBody").html(html);
+				}, "json")
+			}
+			return false
+		})
+
+		$("#aname").keydown(function (event) {
+			return false
+		})
+
 		/**
 		 * 修改线索备注
 		 * 前端需要做什么：修改完后刷新备注列表
@@ -106,140 +277,35 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		});
 
 
-		//页面加载完毕后，取出关联的市场活动信息列表
-		showActivityList();
+		// //页面加载完毕后，取出关联的市场活动信息列表
+		// showActivityList();
 
-		//为关联市场活动模态窗口中的 搜索框 绑定事件，通过触发回车键，查询并展现所需市场活动列表
-		$("#aname").keydown(function (event) {
-
-			//如果是回车键
-			if(event.keyCode==13){
-
-				//alert("查询并展现市场活动列表");
-
-				$.ajax({
-
-					url : "workbench/clue/getActivityListByNameAndNotByClueId.do",
-					data : {
-
-						"aname" : $.trim($("#aname").val()),
-						"clueId" : "${c.id}"
-
-					},
-					type : "get",
-					dataType : "json",
-					success : function (data) {
-
-						/*
-
-							data
-								[{市场活动1},{2},{3}]
-
-						 */
-						var html = "";
-
-						$.each(data,function (i,n) {
-
-							html += '<tr>';
-							html += '<td><input type="checkbox" name="xz" value="'+n.id+'"/></td>';
-							html += '<td>'+n.name+'</td>';
-							html += '<td>'+n.startDate+'</td>';
-							html += '<td>'+n.endDate+'</td>';
-							html += '<td>'+n.owner+'</td>';
-							html += '</tr>';
-
-						})
-
-						$("#activitySearchBody").html(html);
-
-
-
-
-					}
-
-				})
-
-
-				//展现完列表后，记得将模态窗口默认的回车行为禁用掉
-				return false;
-
-			}
-
-		})
-
-		//为关联按钮绑定事件，执行关联表的添加操作
-		$("#bundBtn").click(function () {
-
-			var $xz = $("input[name=xz]:checked");
-
-			if($xz.length==0){
-
-				alert("请选择需要关联的市场活动");
-
-			//1条或者多条
-			}else{
-
-				//workbench/clue/bund.do?cid=xxx&aid=xxx&aid=xxx&aid=xxx
-
-				var param = "cid=${c.id}&";
-
-				for(var i=0;i<$xz.length;i++){
-
-					param += "aid="+$($xz[i]).val();
-
-					if(i<$xz.length-1){
-
-						param += "&";
-
-					}
-
-				}
-
-				//alert(param);
-
-				$.ajax({
-
-					url : "workbench/clue/bund.do",
-					data : param,
-					type : "post",
-					dataType : "json",
-					success : function (data) {
-
-						/*
-
-							data
-								{"success":true/false}
-
-						 */
-
-						if(data.success){
-
-							//关联成功
-							//刷新关联市场活动的列表
-							showActivityList();
-
-							//清除搜索框中的信息  复选框中的√干掉 清空activitySearchBody中的内容
-
-							//关闭模态窗口
-							$("#bundModal").modal("hide");
-
-						}else{
-
-							alert("关联市场活动失败");
-
-						}
-
-					}
-
-				})
-
-			}
-
-		})
-
-
-
+		showRelatedActivityList();
 	});
+
+	//前端需要：所有关联的活动列表（名称	开始日期	结束日期	所有者）
+	//前端要做：铺上活动数据
+	//后端需要：当前线索的id
+	function showRelatedActivityList() {
+		$.get("clueServlet", {
+			"action":"getAllRelatedActsByClueId",
+
+			"clueId":"${clue.id}"
+		}, function (data) {
+			var html = "";
+			//data:act列表
+			$.each(data, function (i, n) {
+				html += '<tr>'
+				html += '<td>'+n.name+'</td>'
+				html += '<td>'+n.startDate+'</td>'
+				html += '<td>'+n.endDate+'</td>'
+				html += '<td>'+n.owner+'</td>'
+				html += '<td><a href="javascript:void(0);"  style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>'
+				html += '</tr>'
+			})
+			$("#activityBody").html(html)
+		}, "json")
+	}
 
 	/**
 	 * 显示线索备注列表，每次页面加载后执行
@@ -276,6 +342,31 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			$("div[name=firstRemarks]").remove();
 			$("#remarkDiv").before(html);
 		}, "json")
+	}
+
+	/**
+	 * 按备注id号删除备注
+	 * 前端需要什么：删除成功与否标志
+	 * 前端需要做什么：向用户确认是否要删除，删除成功后刷新列表
+	 * 后端需要什么：备注id号
+	 * 后端需要做什么：按删除备注
+	 *
+	 */
+	function removeClueRemark(id) {
+		var noteContent = $("#" + id +" h5").html();
+		if(confirm("你确定要删除备注【"+noteContent+"】吗?")) {
+			$.get("clueServlet",{
+				"action":"removeClueRemarkByRemarkId",
+
+				"id":id
+			}, function (data) {
+				if(data.success) {
+					showClueRemarkList();
+				} else {
+					alert("修改失败");
+				}
+			}, "json")
+		}
 	}
 
 
@@ -769,26 +860,26 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 						</tr>
 					</thead>
 					<tbody id="activityBody">
-						<%--<tr>
-							<td>发传单</td>
-							<td>2020-10-10</td>
-							<td>2020-10-20</td>
-							<td>zhangsan</td>
-							<td><a href="javascript:void(0);"  style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>
-						</tr>
-						<tr>
-							<td>发传单</td>
-							<td>2020-10-10</td>
-							<td>2020-10-20</td>
-							<td>zhangsan</td>
-							<td><a href="javascript:void(0);"  style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>
-						</tr>--%>
+<%--						<tr>--%>
+<%--							<td>发传单</td>--%>
+<%--							<td>2020-10-10</td>--%>
+<%--							<td>2020-10-20</td>--%>
+<%--							<td>zhangsan</td>--%>
+<%--							<td><a href="javascript:void(0);"  style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>--%>
+<%--						</tr>--%>
+<%--						<tr>--%>
+<%--							<td>发传单</td>--%>
+<%--							<td>2020-10-10</td>--%>
+<%--							<td>2020-10-20</td>--%>
+<%--							<td>zhangsan</td>--%>
+<%--							<td><a href="javascript:void(0);"  style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>--%>
+<%--						</tr>--%>
 					</tbody>
 				</table>
 			</div>
 			
 			<div>
-				<a href="javascript:void(0);" data-toggle="modal" data-target="#bundModal" style="text-decoration: none;"><span class="glyphicon glyphicon-plus"></span>关联市场活动</a>
+				<a href="javascript:void(0);" id="openBundModal" style="text-decoration: none;"><span class="glyphicon glyphicon-plus"></span>关联市场活动</a>
 			</div>
 		</div>
 	</div>

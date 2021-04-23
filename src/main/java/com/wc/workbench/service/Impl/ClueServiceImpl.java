@@ -9,13 +9,12 @@ import com.wc.vo.PageVo;
 import com.wc.workbench.dao.*;
 import com.wc.workbench.domain.*;
 import com.wc.workbench.service.ClueService;
+import org.apache.ibatis.annotations.Param;
 
-import javax.print.attribute.HashAttributeSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ClueServiceImpl implements ClueService {
+    ActivityDao activityDao = SqlSessionUtil.getSqlSession().getMapper(ActivityDao.class);
     ClueDao clueDao = SqlSessionUtil.getSqlSession().getMapper(ClueDao.class);
     CustomerDao customerDao = SqlSessionUtil.getSqlSession().getMapper(CustomerDao.class);
     ContactsDao contactsDao = SqlSessionUtil.getSqlSession().getMapper(ContactsDao.class);
@@ -64,19 +63,19 @@ public class ClueServiceImpl implements ClueService {
 
         int count = 0;
         //循环插入所有关系
-        for(int i = 0; i < actIds.length; i++) {
+        for (int i = 0; i < actIds.length; i++) {
             ClueActivityRelation clueActivityRelation = new ClueActivityRelation();
 
             clueActivityRelation.setId(UUIDUtil.getUUID());
             clueActivityRelation.setActivityId(actIds[i]);
             clueActivityRelation.setClueId(clueId);
 
-            if(clueDao.insertRelation(clueActivityRelation)) {
-                count ++;
+            if (clueDao.insertRelation(clueActivityRelation)) {
+                count++;
             }
         }
         //检查是否真的插入了所有的关系
-        if(count == actIds.length) {
+        if (count == actIds.length) {
             return true;
         }
         return false;
@@ -90,6 +89,7 @@ public class ClueServiceImpl implements ClueService {
 
     /**
      * 完成线索表，备注表，关系表的转换以及交易表的插入
+     *
      * @param clueId
      * @param transaction
      * @param createBy
@@ -108,7 +108,7 @@ public class ClueServiceImpl implements ClueService {
         //转换公司
         String companyName = targetClue.getCompany();
         Customer company = customerDao.queryCustomerByName(companyName);    //查询公司（客户）是否已经存在
-        if(company == null) {               //如果公司不存在，就将其写入数据库
+        if (company == null) {               //如果公司不存在，就将其写入数据库
 
             company = new Customer();
             company.setId(UUIDUtil.getUUID());
@@ -123,7 +123,7 @@ public class ClueServiceImpl implements ClueService {
             company.setNextContactTime(targetClue.getNextContactTime());
             company.setContactSummary(targetClue.getContactSummary());
 
-            if(!customerDao.save(company)) {            //将客户写入数据库
+            if (!customerDao.save(company)) {            //将客户写入数据库
                 flag = false;
             }
         }
@@ -150,7 +150,7 @@ public class ClueServiceImpl implements ClueService {
         contacts.setCreateBy(createBy);
         contacts.setCreateTime(createTime);
 
-        if(!contactsDao.save(contacts)) {        //将联系人存入数据库
+        if (!contactsDao.save(contacts)) {        //将联系人存入数据库
             flag = false;
         }
 
@@ -159,7 +159,7 @@ public class ClueServiceImpl implements ClueService {
 
         //转换备注表
         List<ClueRemark> targetClueRemarks = clueRemarkDao.queryRemarkByClueId(clueId);
-        for(ClueRemark clueRemark:targetClueRemarks) {
+        for (ClueRemark clueRemark : targetClueRemarks) {
             String noteContent = clueRemark.getNoteContent();
 
 
@@ -173,7 +173,7 @@ public class ClueServiceImpl implements ClueService {
             contactsRemark.setCreateBy(createBy);
             contactsRemark.setEditFlag("0");
 
-            if(!contactsRemarkDao.save(contactsRemark)) {
+            if (!contactsRemarkDao.save(contactsRemark)) {
                 flag = false;
             }
 
@@ -188,7 +188,7 @@ public class ClueServiceImpl implements ClueService {
             customerRemark.setCreateBy(createBy);
             customerRemark.setEditFlag("0");
 
-            if(!customerRemarkDao.save(customerRemark)) {
+            if (!customerRemarkDao.save(customerRemark)) {
                 flag = false;
             }
         }
@@ -198,7 +198,7 @@ public class ClueServiceImpl implements ClueService {
 
         //转换线索与市场活动关系表
         List<ClueActivityRelation> clueActivityRelationList = clueActivityRelationDao.queryRelationByClueId(clueId);
-        for(ClueActivityRelation clueActivityRelation:clueActivityRelationList) {
+        for (ClueActivityRelation clueActivityRelation : clueActivityRelationList) {
             String activityId = clueActivityRelation.getActivityId();
 
             ContactsActivityRelation contactsActivityRelation = new ContactsActivityRelation();
@@ -207,7 +207,7 @@ public class ClueServiceImpl implements ClueService {
             contactsActivityRelation.setId(UUIDUtil.getUUID());
             contactsActivityRelation.setContactsId(contacts.getId());
 
-            if(!contactsActivityRelationDao.save(contactsActivityRelation)) {
+            if (!contactsActivityRelationDao.save(contactsActivityRelation)) {
                 flag = false;
             }
         }
@@ -216,7 +216,7 @@ public class ClueServiceImpl implements ClueService {
 
 
         //如果有交易，创建一条交易
-        if(transaction != null) {
+        if (transaction != null) {
             System.out.println("====================================开始创建交易========================================");
 
             transaction.setSource(targetClue.getSource());
@@ -227,7 +227,7 @@ public class ClueServiceImpl implements ClueService {
             transaction.setContactsId(contacts.getId());
             transaction.setContactSummary(contacts.getContactSummary());
 
-            if(!tranDao.createTran(transaction)) {
+            if (!tranDao.createTran(transaction)) {
                 flag = false;
             }
 
@@ -242,7 +242,7 @@ public class ClueServiceImpl implements ClueService {
             tranHistory.setMoney(transaction.getMoney());
             tranHistory.setStage(transaction.getStage());
 
-            if(!tranHistoryDao.save(tranHistory)) {
+            if (!tranHistoryDao.save(tranHistory)) {
                 flag = false;
             }
         }
@@ -250,9 +250,8 @@ public class ClueServiceImpl implements ClueService {
         System.out.println("====================================交易创建成功========================================");
 
 
-
         //删除线索备注
-        if(!clueRemarkDao.delByClueId(clueId)) {
+        if (!clueRemarkDao.delByClueId(clueId)) {
             flag = false;
             System.out.println("fail");
 
@@ -260,7 +259,7 @@ public class ClueServiceImpl implements ClueService {
         System.out.println("====================================线索备注删除成功========================================");
 
         //删除线索和市场活动关联关系
-        if(!clueActivityRelationDao.delByClueId(clueId)) {
+        if (!clueActivityRelationDao.delByClueId(clueId)) {
             flag = false;
             System.out.println("fail");
 
@@ -268,7 +267,7 @@ public class ClueServiceImpl implements ClueService {
         System.out.println("====================================活动关系删除成功========================================");
 
         //删除线索
-        if(!clueDao.delById(clueId)) {
+        if (!clueDao.delById(clueId)) {
             flag = false;
             System.out.println("fail");
         }
@@ -282,9 +281,9 @@ public class ClueServiceImpl implements ClueService {
         //获取总记录数和每页的数据
         List<Clue> clueList = clueDao.queryPageCluesByConditions(map);
         int totalCount = clueDao.queryTotalClueCountByConditions(map);
-        
+
         //计算总页数
-        Integer pageSize = (Integer)map.get("pageSize");
+        Integer pageSize = (Integer) map.get("pageSize");
         Integer totalPages = totalCount % pageSize == 0 ? totalCount / pageSize : totalCount / pageSize + 1;
 
         return new PageVo<Clue>(totalCount, totalPages, clueList);
@@ -294,7 +293,7 @@ public class ClueServiceImpl implements ClueService {
         boolean flag = true;
 
         for (int i = 0; i < ids.length; i++) {
-            if(!clueDao.removeClueById(ids[i])) {
+            if (!clueDao.removeClueById(ids[i])) {
                 flag = false;
             }
         }
@@ -326,6 +325,10 @@ public class ClueServiceImpl implements ClueService {
         //获取备注列表
         List<ClueRemark> clueRemarkList = clueRemarkDao.queryRemarkByClueId(clueId);
 
+        //将备注列表按修改时间或创建时间从降序排列
+        Collections.sort(clueRemarkList, Collections.reverseOrder());   //降序排列
+
+        //将数据返回web端
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("clue", clue);
         map.put("clueRemarkList", clueRemarkList);
@@ -336,4 +339,21 @@ public class ClueServiceImpl implements ClueService {
 
         return clueRemarkDao.updateClueRemarkContentByRemarkId(clueRemark);
     }
+
+    public boolean removeClueRemarkByRemarkId(String id) {
+        return clueRemarkDao.delByClueRemarkId(id);
+    }
+
+    public List<Activity> getActivitiesByName(String aname) {
+        return activityDao.queryActivityByName(aname);
+    }
+
+    public boolean bundActs(List<ClueActivityRelation> list) {
+        return clueActivityRelationDao.insertRelations(list);
+    }
+
+    public List<Activity> getAllRelatedActsByClueId(String clueId) {
+        return activityDao.getAllRelatedActsByClueId(clueId);
+    }
+
 }

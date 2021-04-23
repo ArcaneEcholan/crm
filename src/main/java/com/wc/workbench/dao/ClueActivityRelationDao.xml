@@ -4,6 +4,14 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wc.workbench.dao.ClueActivityRelationDao">
 
+    <insert id="insertRelations">
+        insert into tbl_clue_activity_relation
+        values
+        <foreach collection="list" item="relation" separator=",">
+            (#{relation.id}, #{relation.clueId}, #{relation.activityId})
+        </foreach>
+    </insert>
+
     <select id="queryRelationByClueId" resultType="com.wc.workbench.domain.ClueActivityRelation">
         select * from `tbl_clue_activity_relation`
         where clueId = #{clueId}

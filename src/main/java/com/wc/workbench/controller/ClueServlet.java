@@ -5,21 +5,16 @@ import com.wc.settings.service.Impl.UserServiceImpl;
 import com.wc.settings.service.UserService;
 import com.wc.utils.*;
 import com.wc.vo.PageVo;
-import com.wc.workbench.domain.Activity;
-import com.wc.workbench.domain.Clue;
-import com.wc.workbench.domain.ClueRemark;
-import com.wc.workbench.domain.Tran;
+import com.wc.workbench.domain.*;
 import com.wc.workbench.service.ClueService;
 import com.wc.workbench.service.Impl.ClueServiceImpl;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.plaf.IconUIResource;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class ClueServlet extends BaseServlet {
@@ -362,4 +357,83 @@ public class ClueServlet extends BaseServlet {
         //返回结果
         PrintJson.printJsonFlag(resp, success);
     }
+
+    /**
+     * 后端需要什么：备注id号
+     * 后端需要做什么：按删除备注
+     */
+    protected void removeClueRemarkByRemarkId(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //获取线索id和内容
+        String id = req.getParameter("id");
+        System.out.println(id);
+
+        ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        //前端需要线索和关联的备注表
+        boolean success = clueService.removeClueRemarkByRemarkId(id);
+        //返回结果
+        PrintJson.printJsonFlag(resp, success);
+    }
+
+    /**
+     * 后端需要做什么：返回所有活动
+     */
+    protected void getAllActivities(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+        //前端需要所有活动
+        List<Activity> activityList = clueService.getAllActivities();
+        //返回结果
+        PrintJson.printJsonObj(resp, activityList);
+    }
+
+    /**
+     * 后端需要做什么：返回符合条件的所有活动
+     */
+    protected void getActivitiesByName (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String aname = req.getParameter("aname");
+        ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+        //前端需要所有活动
+        List<Activity> activityList = clueService.getActivitiesByName(aname);
+        //返回结果
+        PrintJson.printJsonObj(resp, activityList);
+    }
+
+    /**
+     * 后端需要做什么：往关联表中加记录(插入clueId和activityId)
+     */
+    protected void bundActs (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String[] activityIds = req.getParameterValues("id");
+        String clueId = req.getParameter("clueId");
+        List<ClueActivityRelation> list = new ArrayList<ClueActivityRelation>();
+        ClueActivityRelation clueActivityRelation = null;
+        for(int i = 0; i < activityIds.length; i++) {
+            clueActivityRelation = new ClueActivityRelation();
+            clueActivityRelation.setId(UUIDUtil.getUUID());
+            clueActivityRelation.setClueId(clueId);
+            clueActivityRelation.setActivityId(activityIds[i]);
+            list.add(clueActivityRelation);
+        }
+
+        ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+        //前端需要所有活动
+        boolean success = clueService.bundActs(list);
+        //返回结果
+        PrintJson.printJsonFlag(resp, success);
+    }
+
+    /**
+     * 后端需要做什么：往关联表中加记录(插入clueId和activityId)
+     */
+    protected void getAllRelatedActsByClueId (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String clueId = req.getParameter("clueId");
+        System.out.println(clueId);
+
+        ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+        //前端需要所有活动
+        List<Activity> activityList = clueService.getAllRelatedActsByClueId(clueId);
+        //返回结果
+        PrintJson.printJsonObj(resp, activityList);
+    }
+
+
 }
