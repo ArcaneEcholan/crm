@@ -8,6 +8,7 @@
 <!--所有关联的活动列表（名称   开始日期	结束日期	 所有者）-->
     <select id="getAllRelatedActsByClueId" resultType="com.wc.workbench.domain.Activity">
         SELECT
+            act.id id,
             act.name name,
             `user`.name `owner` ,
             startDate  ,
@@ -17,7 +18,7 @@
         where clueId=#{clueId}
     </select>
 
-    <select id="queryActivityByName" resultType="com.wc.workbench.domain.Activity">
+    <select id="queryNotBundedActivityByName" resultType="com.wc.workbench.domain.Activity">
         SELECT
             act.id id,
             `user`.name `owner` ,
@@ -30,7 +31,13 @@
             act.createBy createBy  ,
             act.editTime editTime  ,
             act.editBy editBy
-        FROM `tbl_activity` act JOIN tbl_user `user` ON act.owner=`user`.id
+        FROM (SELECT *
+              FROM `tbl_activity`
+              WHERE id NOT IN(
+                  SELECT activityId
+                  FROM `tbl_clue_activity_relation`
+                  WHERE clueId="4c314d07892e4c179faddd70ed6ff1b6"
+              )) act JOIN tbl_user `user` ON act.owner=`user`.id
         where act.name like "%" #{aname} "%"
     </select>
 

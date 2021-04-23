@@ -19,7 +19,7 @@ public interface ClueDao {
 
     boolean delRelationByClueIdAndActivityId(Map<String, String> map);
 
-    List<Activity> queryAllActivities();
+    List<Activity> queryAllNotBundedActivities();
 
     List<Activity> queryAllActivitiesByNameAndNotRelatedWithClue(Map<String, String> map);
 

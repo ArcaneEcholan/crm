@@ -27,7 +27,7 @@ public interface ActivityDao {
 
     Activity queryActivityDetail(String id);
 
-    List<Activity> queryActivityByName(String aname);
+    List<Activity> queryNotBundedActivityByName(String aname);
 
     List<Activity> getAllRelatedActsByClueId(String clueId);
 }

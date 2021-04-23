@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public interface ClueActivityRelationDao {
 
@@ -18,4 +19,6 @@ public interface ClueActivityRelationDao {
     boolean insertRelations(List<ClueActivityRelation> list);
 
     boolean test(@Param("ajsld") ArrayList arrayList);
+
+    boolean delRelationByClueIdAndActId(Map<String, Object> map);
 }

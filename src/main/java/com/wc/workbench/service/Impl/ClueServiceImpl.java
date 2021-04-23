@@ -32,11 +32,7 @@ public class ClueServiceImpl implements ClueService {
         return clueDao.saveClue(clue);
 
     }
-//
-//    public List<Clue> showClueList(Clue clue) {
-//
-//        return clueDao.queryClueListByClue(clue);
-//    }
+
 
     public Clue getClueById(String id) {
 
@@ -51,8 +47,8 @@ public class ClueServiceImpl implements ClueService {
         return clueDao.delRelationByClueIdAndActivityId(map);
     }
 
-    public List<Activity> getAllActivities() {
-        return clueDao.queryAllActivities();
+    public List<Activity> getAllNotBundedActivities() {
+        return clueDao.queryAllNotBundedActivities();
     }
 
     public List<Activity> getAllActivitiesByNameAndNotRelatedWithClue(Map<String, String> map) {
@@ -344,8 +340,8 @@ public class ClueServiceImpl implements ClueService {
         return clueRemarkDao.delByClueRemarkId(id);
     }
 
-    public List<Activity> getActivitiesByName(String aname) {
-        return activityDao.queryActivityByName(aname);
+    public List<Activity> getNotBundedActivitiesByName(String aname) {
+        return activityDao.queryNotBundedActivityByName(aname);
     }
 
     public boolean bundActs(List<ClueActivityRelation> list) {
@@ -354,6 +350,10 @@ public class ClueServiceImpl implements ClueService {
 
     public List<Activity> getAllRelatedActsByClueId(String clueId) {
         return activityDao.getAllRelatedActsByClueId(clueId);
+    }
+
+    public boolean unbund(Map<String, Object> map) {
+        return clueActivityRelationDao.delRelationByClueIdAndActId(map);
     }
 
 }

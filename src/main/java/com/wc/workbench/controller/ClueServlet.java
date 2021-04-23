@@ -144,30 +144,6 @@ public class ClueServlet extends BaseServlet {
         PrintJson.printJsonObj(resp, activityList);
     }
 
-    protected void unbund(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String clueId = req.getParameter("clueId");
-        String activityId = req.getParameter("activityId");
-
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("clueId",clueId);
-        map.put("activityId",activityId);
-
-        ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
-
-        boolean success = clueService.delRelationByClueIdAndActivityId(map);
-
-        PrintJson.printJsonFlag(resp, success);
-    }
-
-    protected void getAllActivitys(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-        ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
-
-        List<Activity> activityList = clueService.getAllActivities();
-
-        PrintJson.printJsonObj(resp, activityList);
-    }
-
     protected void getAllActivitiesByNameAndNotRelatedWithClue(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         String actName = req.getParameter("actName");
@@ -378,10 +354,10 @@ public class ClueServlet extends BaseServlet {
     /**
      * 后端需要做什么：返回所有活动
      */
-    protected void getAllActivities(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void getAllNotBundedActivities(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
         //前端需要所有活动
-        List<Activity> activityList = clueService.getAllActivities();
+        List<Activity> activityList = clueService.getAllNotBundedActivities();
         //返回结果
         PrintJson.printJsonObj(resp, activityList);
     }
@@ -389,11 +365,11 @@ public class ClueServlet extends BaseServlet {
     /**
      * 后端需要做什么：返回符合条件的所有活动
      */
-    protected void getActivitiesByName (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void getNotBundedActivitiesByName (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String aname = req.getParameter("aname");
         ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
         //前端需要所有活动
-        List<Activity> activityList = clueService.getActivitiesByName(aname);
+        List<Activity> activityList = clueService.getNotBundedActivitiesByName(aname);
         //返回结果
         PrintJson.printJsonObj(resp, activityList);
     }
@@ -422,7 +398,7 @@ public class ClueServlet extends BaseServlet {
     }
 
     /**
-     * 后端需要做什么：往关联表中加记录(插入clueId和activityId)
+     * 后端需要做什么：获取所有关联的市场活动（id 名称 开始日期	结束日期	所有者）
      */
     protected void getAllRelatedActsByClueId (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String clueId = req.getParameter("clueId");
@@ -435,5 +411,37 @@ public class ClueServlet extends BaseServlet {
         PrintJson.printJsonObj(resp, activityList);
     }
 
+//    protected void unbund(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+//        String clueId = req.getParameter("clueId");
+//        String activityId = req.getParameter("activityId");
+//
+//        Map<String, String> map = new HashMap<String, String>();
+//        map.put("clueId",clueId);
+//        map.put("activityId",activityId);
+//
+//        ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+//
+//        boolean success = clueService.delRelationByClueIdAndActivityId(map);
+//
+//        PrintJson.printJsonFlag(resp, success);
+//    }
+
+    /**
+     * 后端需要什么：关联的线索id和活动id
+     * 后端需要做什么：删除关联表tbl_clue_activity_relation中的一条记录
+     */
+    protected void unbund (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String clueId = req.getParameter("clueId");
+        String activityId = req.getParameter("activityId");
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("clueId", clueId);
+        map.put("activityId", activityId);
+
+        ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+        boolean success = clueService.unbund(map);
+        System.out.println(success);
+        //返回结果
+        PrintJson.printJsonFlag(resp, success);
+    }
 
 }

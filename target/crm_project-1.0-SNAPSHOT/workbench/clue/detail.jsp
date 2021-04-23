@@ -90,10 +90,10 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 
 		//打开关联活动模态窗口
-		//前端需要数据：数据库中所有活动
+		//前端需要数据：数据库中所有 没绑定到此线索的 活动
 		$("#openBundModal").click(function() {
 			$.get("clueServlet",{
-				"action":"getAllActivities"
+				"action":"getAllNotBundedActivities"
 			}, function(data) {
 				var html="";
 				$.each(data, function (i,n) {
@@ -110,53 +110,6 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			$("#bundModal").modal("show");
 		})
 
-		<%--//为关联市场活动模态窗口中的 搜索框 绑定事件，通过触发回车键，查询并展现所需市场活动列表--%>
-		<%--$("#aname").keydown(function (event) {--%>
-
-		<%--	//如果是回车键--%>
-		<%--	if(event.keyCode==13){--%>
-
-		<%--		//alert("查询并展现市场活动列表");--%>
-
-		<%--		$.ajax({--%>
-
-		<%--			url : "workbench/clue/getActivityListByNameAndNotByClueId.do",--%>
-		<%--			data : {--%>
-
-		<%--				"aname" : $.trim($("#aname").val()),--%>
-		<%--				"clueId" : "${c.id}"--%>
-
-		<%--			},--%>
-		<%--			type : "get",--%>
-		<%--			dataType : "json",--%>
-		<%--			success : function (data) {--%>
-
-		<%--				/*--%>
-
-		<%--					data--%>
-		<%--						[{市场活动1},{2},{3}]--%>
-
-		<%--				 */--%>
-		<%--				var html = "";--%>
-
-		<%--				$.each(data,function (i,n) {--%>
-
-		<%--					html += '<tr>';--%>
-		<%--					html += '<td><input type="checkbox" name="xz" value="'+n.id+'"/></td>';--%>
-		<%--					html += '<td>'+n.name+'</td>';--%>
-		<%--					html += '<td>'+n.startDate+'</td>';--%>
-		<%--					html += '<td>'+n.endDate+'</td>';--%>
-		<%--					html += '<td>'+n.owner+'</td>';--%>
-		<%--					html += '</tr>';--%>
-		<%--				})--%>
-		<%--				$("#activitySearchBody").html(html);--%>
-		<%--			}--%>
-		<%--		})--%>
-		<%--		//展现完列表后，记得将模态窗口默认的回车行为禁用掉--%>
-		<%--		return false;--%>
-		<%--	}--%>
-
-		<%--})--%>
 
 		//为aname绑定搜索操作
 		//前端需要数据：符合查询条件的结果集（活动列表）
@@ -164,7 +117,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		$("#aname").keydown(function (event) {
 			if (event.keyCode == 13){
 				$.get("clueServlet", {
-					"action": "getActivitiesByName",
+					"action": "getNotBundedActivitiesByName",
 
 					"aname": $(this).val()
 				}, function (data) {
@@ -283,6 +236,40 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		showRelatedActivityList();
 	});
 
+
+
+
+
+
+
+
+
+
+
+	/**
+	 * 解除市场活动的关联
+	 * 前端需要什么：解除关联成功的标志
+	 * 前端需要做什么：提示客户是否需要解除，如果解除失败，提示解除失败;成功则刷新列表
+	 * 后端需要什么：关联的线索id和活动id
+	 */
+	function unbund(activityId) {
+		if(confirm("你确定要解除此关联？")){
+			$.get("clueServlet",{
+				"action":"unbund",
+
+				"clueId":"${clue.id}",
+				"activityId":activityId
+			},function (data) {
+				if(data.success) {
+					showRelatedActivityList();
+				}
+				else {
+					alert("关联解除失败")
+				}
+			},"json")
+		}
+	}
+
 	//前端需要：所有关联的活动列表（名称	开始日期	结束日期	所有者）
 	//前端要做：铺上活动数据
 	//后端需要：当前线索的id
@@ -300,7 +287,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				html += '<td>'+n.startDate+'</td>'
 				html += '<td>'+n.endDate+'</td>'
 				html += '<td>'+n.owner+'</td>'
-				html += '<td><a href="javascript:void(0);"  style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>'
+				html += '<td><a href="javascript:void(0);" onclick="unbund(\'' +n.id+ '\')" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>'
 				html += '</tr>'
 			})
 			$("#activityBody").html(html)
@@ -380,93 +367,6 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		//将线索id埋入隐藏域，方便修改
 		$("#clueRemarkId").val(id);
 		$("#editRemarkModal").modal("show");
-	}
-
-	function showActivityList() {
-
-		$.ajax({
-
-			url : "workbench/clue/getActivityListByClueId.do",
-			data : {
-
-				"clueId" : "${c.id}"
-
-			},
-			type : "get",
-			dataType : "json",
-			success : function (data) {
-
-				/*
-
-					data
-						[{市场活动1},{2},{3}]
-
-				 */
-
-				var html = "";
-
-				$.each(data,function (i,n) {
-
-					html += '<tr>';
-					html += '<td>'+n.name+'</td>';
-					html += '<td>'+n.startDate+'</td>';
-					html += '<td>'+n.endDate+'</td>';
-					html += '<td>'+n.owner+'</td>';
-					html += '<td><a href="javascript:void(0);" onclick="unbund(\''+n.id+'\')" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>';
-					html += '</tr>';
-
-				})
-
-				$("#activityBody").html(html);
-
-			}
-
-		})
-
-	}
-
-	/*
-
-		id:我们想要一个关联关系表的id
-
-	 */
-	function unbund(id) {
-
-		$.ajax({
-
-			url : "workbench/clue/unbund.do",
-			data : {
-
-				"id" : id
-
-			},
-			type : "post",
-			dataType : "json",
-			success : function (data) {
-
-				/*
-
-					data
-						{"success":true/false}
-
-				 */
-
-				if(data.success){
-
-					//解除关联成功
-					//刷新关联的市场活动列表
-					showActivityList();
-
-				}else{
-
-					alert("解除关联失败");
-
-				}
-
-			}
-
-		})
-
 	}
 
 </script>
@@ -860,20 +760,15 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 						</tr>
 					</thead>
 					<tbody id="activityBody">
-<%--						<tr>--%>
-<%--							<td>发传单</td>--%>
-<%--							<td>2020-10-10</td>--%>
-<%--							<td>2020-10-20</td>--%>
-<%--							<td>zhangsan</td>--%>
-<%--							<td><a href="javascript:void(0);"  style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>--%>
-<%--						</tr>--%>
-<%--						<tr>--%>
-<%--							<td>发传单</td>--%>
-<%--							<td>2020-10-10</td>--%>
-<%--							<td>2020-10-20</td>--%>
-<%--							<td>zhangsan</td>--%>
-<%--							<td><a href="javascript:void(0);"  style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>--%>
-<%--						</tr>--%>
+
+
+
+
+
+
+
+
+
 					</tbody>
 				</table>
 			</div>

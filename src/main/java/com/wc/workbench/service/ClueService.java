@@ -16,7 +16,7 @@ public interface ClueService {
 
     boolean delRelationByClueIdAndActivityId(Map<String, String> map);
 
-    List<Activity> getAllActivities();
+    List<Activity> getAllNotBundedActivities();
 
     List<Activity> getAllActivitiesByNameAndNotRelatedWithClue(Map<String, String> map);
 
@@ -42,10 +42,11 @@ public interface ClueService {
 
     boolean removeClueRemarkByRemarkId(String id);
 
-    List<Activity> getActivitiesByName(String aname);
+    List<Activity> getNotBundedActivitiesByName(String aname);
 
     boolean bundActs(List<ClueActivityRelation> list);
 
     List<Activity> getAllRelatedActsByClueId(String clueId);
 
+    boolean unbund(Map<String, Object> map);
 }
