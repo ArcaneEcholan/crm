@@ -90,23 +90,35 @@ String base = request.getScheme()
 			$("#searchActivityModal").modal("hide");
 		})
 
-		//转换
+		/**
+		 * 当前转换线索为客户（公司）和公司联系人
+		 * 前端需要什么：转换成功与否标志
+		 * 前端需要做什么：转换成功与否提示，转换成功后跳转到线索的index页面
+		 * 后端需要什么：当前线索id
+		 */
 		$("#convertBtn").click(function () {
-			if($("#isCreateTransaction").prop("checked")) {
-				console.log("需要交易")
+			var $checked = $("#isCreateTransaction").prop("checked");
 
-				//提交表单
-				$("#tranForm").submit();
+			if(confirm("你去定要转换该线索吗？")) {
+				$.get("clueServlet",{
+					"action":"convertClue",
+					"clueId":"${param.id}",
 
-
-
-			} else {
-				console.log("不需要交易")
-
-				var href =  "clueServlet?action=convert&clueId=${param.id}"
-				//发送传统请求
-				window.location.href = href;
-				console.log(href)
+					"flag":$checked,
+					"money":$("#amountOfMoney").val(),
+					"name":$("#tradeName").val(),
+					"expectedDate":$("#expectedClosingDate").val(),
+					"stage":$("#stage").val(),
+					"activityName":$("#activityName").val(),
+					"activityId":$("#activityId").val()
+				}, function(data) {
+					if(data.success) {
+						alert("转换成功");
+						window.location.href="workbench/clue/index.jsp"
+					} else {
+						alert("转换失败");
+					}
+				}, "json")
 			}
 		})
 	});

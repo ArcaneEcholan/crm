@@ -169,7 +169,7 @@
     </select>
 
 
-
+    <!--没有转换所有者-->
     <select id="queryClueById2" resultType="com.wc.workbench.domain.Clue">
         SELECT
             *
@@ -179,6 +179,7 @@
             id=#{id}
     </select>
 
+    <!--将所有者id转换成了姓名-->
     <select id="queryClueById" resultType="com.wc.workbench.domain.Clue">
         SELECT
             clue.id,

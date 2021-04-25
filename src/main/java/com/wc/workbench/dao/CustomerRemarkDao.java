@@ -2,7 +2,8 @@ package com.wc.workbench.dao;
 
 import com.wc.workbench.domain.CustomerRemark;
 
-public interface CustomerRemarkDao {
+import java.util.List;
 
-    boolean save(CustomerRemark customerRemark);
+public interface CustomerRemarkDao {
+    boolean saveCustomerRemarks(List<CustomerRemark> customerRemarks);
 }

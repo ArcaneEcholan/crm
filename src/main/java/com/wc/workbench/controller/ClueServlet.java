@@ -8,6 +8,7 @@ import com.wc.vo.PageVo;
 import com.wc.workbench.domain.*;
 import com.wc.workbench.service.ClueService;
 import com.wc.workbench.service.Impl.ClueServiceImpl;
+import org.apache.commons.beanutils.BeanUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -109,8 +110,6 @@ public class ClueServlet extends BaseServlet {
         map.put("pageSize", pageSize);
         map.put("skipCount", skipCount);
 
-
-
         ClueService clueService = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
 
         //前端需要数据：总页数，总记录数，每页数据
@@ -182,46 +181,7 @@ public class ClueServlet extends BaseServlet {
         PrintJson.printJsonObj(resp, activities);
     }
 
-    protected void convert(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        String flag = req.getParameter("flag");
-        String clueId = req.getParameter("clueId");
-
-        String createBy = ((User)req.getSession().getAttribute("user")).getName();
-        Tran transaction = null;
-        //如果是提交表单发起的请求,则需要添加交易
-        if("a".equals(flag)) {
-            transaction = new Tran();
-
-            String money = req.getParameter("money");
-            String name = req.getParameter("name");
-            String expectedDate = req.getParameter("expectedDate");
-            String stage = req.getParameter("stage");
-            String activityId = req.getParameter("activityId");
-            String createTime = DateTimeUtil.getSysTime();
-            String id = UUIDUtil.getUUID();
-
-            transaction.setMoney(money);
-            transaction.setName(name);
-            transaction.setExpectedDate(expectedDate);
-            transaction.setStage(stage);
-            transaction.setActivityId(activityId);
-            transaction.setCreateBy(createBy);
-            transaction.setCreateTime(createTime);
-            transaction.setId(id);
-        }
-
-        ClueService clueService = (ClueService)ServiceFactory.getService(new ClueServiceImpl());
-
-        boolean success = clueService.convert(clueId, transaction, createBy);
-
-
-        //如果转换成功，转发到开始页面
-        if(success) {
-            req.getRequestDispatcher("/workbench/clue/index.jsp").forward(req
-            ,resp);
-        }
-    }
 
 
     protected void removeClues(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -444,4 +404,33 @@ public class ClueServlet extends BaseServlet {
         PrintJson.printJsonFlag(resp, success);
     }
 
+    /**
+     * 由id号可以查出线索、线索备注、线索与活动的关系，转换到目标Model中后，将目标Model写入数据库表中
+     * 涉及到查询和插入、删除操作
+     */
+    protected void convertClue(HttpServletRequest req, HttpServletResponse resp) {
+        //接收参数
+        String clueId = req.getParameter("clueId");     //线索id
+        String flag = req.getParameter("flag");         //是否创建交易
+
+        String username = (String) req.getSession().getAttribute("username");
+
+        ClueService clueService = (ClueService)ServiceFactory.getService(new ClueServiceImpl());
+        Tran tran = null;
+        //如果有交易，创建交易
+        if("true".equals(flag)) {
+            //owner\customerId\contactsId\createTime\createBy
+            tran = MapToBean.copyMapToBean(req.getParameterMap(), new Tran());
+            tran.setCreateTime(DateTimeUtil.getSysTime());
+            tran.setCreateBy(username);
+            tran.setOwner(((User)(req.getSession().getAttribute("user"))).getId());
+            tran.setId(UUIDUtil.getUUID());
+        }
+
+        //处理核心业务
+        boolean success = clueService.convertClue(tran, username, clueId);
+
+        //返回成功与否标志
+        PrintJson.printJsonFlag(resp, success);
+    }
 }

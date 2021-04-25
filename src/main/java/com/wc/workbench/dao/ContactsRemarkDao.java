@@ -2,7 +2,8 @@ package com.wc.workbench.dao;
 
 import com.wc.workbench.domain.ContactsRemark;
 
-public interface ContactsRemarkDao {
+import java.util.List;
 
-    boolean save(ContactsRemark contactsRemark);
+public interface ContactsRemarkDao {
+    boolean saveContactsRemarks(List<ContactsRemark> contactsRemarks);
 }

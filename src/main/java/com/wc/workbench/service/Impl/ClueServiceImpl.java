@@ -2,14 +2,12 @@ package com.wc.workbench.service.Impl;
 
 import com.wc.settings.dao.UserDao;
 import com.wc.settings.domain.User;
-import com.wc.utils.DateTimeUtil;
 import com.wc.utils.SqlSessionUtil;
 import com.wc.utils.UUIDUtil;
 import com.wc.vo.PageVo;
 import com.wc.workbench.dao.*;
 import com.wc.workbench.domain.*;
 import com.wc.workbench.service.ClueService;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.*;
 
@@ -32,7 +30,6 @@ public class ClueServiceImpl implements ClueService {
         return clueDao.saveClue(clue);
 
     }
-
 
     public Clue getClueById(String id) {
 
@@ -83,195 +80,7 @@ public class ClueServiceImpl implements ClueService {
         return clueDao.queryActivityByName(aname);
     }
 
-    /**
-     * 完成线索表，备注表，关系表的转换以及交易表的插入
-     *
-     * @param clueId
-     * @param transaction
-     * @param createBy
-     * @return
-     */
-    public boolean convert(String clueId, Tran transaction, String createBy) {
-        //标记转换是否成功
-        boolean flag = true;
 
-        //以下创建的记录共用一个创建时间
-        String createTime = DateTimeUtil.getSysTime();
-
-        //查询待转换的线索
-        Clue targetClue = clueDao.queryClueById2(clueId);
-
-        //转换公司
-        String companyName = targetClue.getCompany();
-        Customer company = customerDao.queryCustomerByName(companyName);    //查询公司（客户）是否已经存在
-        if (company == null) {               //如果公司不存在，就将其写入数据库
-
-            company = new Customer();
-            company.setId(UUIDUtil.getUUID());
-            company.setName(companyName);
-            company.setPhone(targetClue.getPhone());
-            company.setWebsite(targetClue.getWebsite());
-            company.setAddress(targetClue.getAddress());
-            company.setDescription(targetClue.getDescription());
-            company.setOwner(targetClue.getOwner());
-            company.setCreateBy(createBy);
-            company.setCreateTime(createTime);
-            company.setNextContactTime(targetClue.getNextContactTime());
-            company.setContactSummary(targetClue.getContactSummary());
-
-            if (!customerDao.save(company)) {            //将客户写入数据库
-                flag = false;
-            }
-        }
-
-        System.out.println("====================================客户转换成功========================================");
-
-        //转换联系人
-        Contacts contacts = new Contacts();
-
-        contacts.setSource(targetClue.getSource());
-        contacts.setFullname(targetClue.getFullname());
-        contacts.setAppellation(targetClue.getAppellation());
-        contacts.setEmail(targetClue.getEmail());
-        contacts.setMphone(targetClue.getMphone());
-        contacts.setJob(targetClue.getJob());
-        contacts.setContactSummary(targetClue.getContactSummary());
-        contacts.setNextContactTime(targetClue.getNextContactTime());
-        contacts.setOwner(targetClue.getOwner());
-        contacts.setDescription(targetClue.getDescription());
-        contacts.setAddress(targetClue.getAddress());
-
-        contacts.setId(UUIDUtil.getUUID());
-        contacts.setCustomerId(company.getId());
-        contacts.setCreateBy(createBy);
-        contacts.setCreateTime(createTime);
-
-        if (!contactsDao.save(contacts)) {        //将联系人存入数据库
-            flag = false;
-        }
-
-        System.out.println("====================================联系人转换成功========================================");
-
-
-        //转换备注表
-        List<ClueRemark> targetClueRemarks = clueRemarkDao.queryRemarkByClueId(clueId);
-        for (ClueRemark clueRemark : targetClueRemarks) {
-            String noteContent = clueRemark.getNoteContent();
-
-
-            ContactsRemark contactsRemark = new ContactsRemark();//转换联系人备注
-            contactsRemark.setNoteContent(noteContent);
-
-            contactsRemark.setNoteContent(noteContent);
-            contactsRemark.setContactsId(contacts.getId());
-            contactsRemark.setId(UUIDUtil.getUUID());
-            contactsRemark.setCreateTime(createTime);
-            contactsRemark.setCreateBy(createBy);
-            contactsRemark.setEditFlag("0");
-
-            if (!contactsRemarkDao.save(contactsRemark)) {
-                flag = false;
-            }
-
-
-            CustomerRemark customerRemark = new CustomerRemark();//转换公司备注
-            customerRemark.setNoteContent(noteContent);
-
-            customerRemark.setNoteContent(noteContent);
-            customerRemark.setCustomerId(company.getId());
-            customerRemark.setId(UUIDUtil.getUUID());
-            customerRemark.setCreateTime(createTime);
-            customerRemark.setCreateBy(createBy);
-            customerRemark.setEditFlag("0");
-
-            if (!customerRemarkDao.save(customerRemark)) {
-                flag = false;
-            }
-        }
-
-        System.out.println("====================================备注表转换成功========================================");
-
-
-        //转换线索与市场活动关系表
-        List<ClueActivityRelation> clueActivityRelationList = clueActivityRelationDao.queryRelationByClueId(clueId);
-        for (ClueActivityRelation clueActivityRelation : clueActivityRelationList) {
-            String activityId = clueActivityRelation.getActivityId();
-
-            ContactsActivityRelation contactsActivityRelation = new ContactsActivityRelation();
-
-            contactsActivityRelation.setActivityId(activityId);
-            contactsActivityRelation.setId(UUIDUtil.getUUID());
-            contactsActivityRelation.setContactsId(contacts.getId());
-
-            if (!contactsActivityRelationDao.save(contactsActivityRelation)) {
-                flag = false;
-            }
-        }
-
-        System.out.println("====================================活动关系转换成功========================================");
-
-
-        //如果有交易，创建一条交易
-        if (transaction != null) {
-            System.out.println("====================================开始创建交易========================================");
-
-            transaction.setSource(targetClue.getSource());
-            transaction.setOwner(targetClue.getOwner());
-            transaction.setNextContactTime(targetClue.getNextContactTime());
-            transaction.setDescription(targetClue.getDescription());
-            transaction.setCustomerId(company.getId());
-            transaction.setContactsId(contacts.getId());
-            transaction.setContactSummary(contacts.getContactSummary());
-
-            if (!tranDao.createTran(transaction)) {
-                flag = false;
-            }
-
-
-            TranHistory tranHistory = new TranHistory();    //为交易创建一条历史记录
-
-            tranHistory.setCreateBy(transaction.getCreateBy());
-            tranHistory.setCreateTime(transaction.getCreateTime());
-            tranHistory.setTranId(transaction.getId());
-            tranHistory.setExpectedDate(transaction.getExpectedDate());
-            tranHistory.setId(UUIDUtil.getUUID());
-            tranHistory.setMoney(transaction.getMoney());
-            tranHistory.setStage(transaction.getStage());
-
-            if (!tranHistoryDao.save(tranHistory)) {
-                flag = false;
-            }
-        }
-
-        System.out.println("====================================交易创建成功========================================");
-
-
-        //删除线索备注
-        if (!clueRemarkDao.delByClueId(clueId)) {
-            flag = false;
-            System.out.println("fail");
-
-        }
-        System.out.println("====================================线索备注删除成功========================================");
-
-        //删除线索和市场活动关联关系
-        if (!clueActivityRelationDao.delByClueId(clueId)) {
-            flag = false;
-            System.out.println("fail");
-
-        }
-        System.out.println("====================================活动关系删除成功========================================");
-
-        //删除线索
-        if (!clueDao.delById(clueId)) {
-            flag = false;
-            System.out.println("fail");
-        }
-        System.out.println("====================================线索删除成功========================================");
-
-
-        return flag;
-    }
 
     public PageVo<Clue> page(Map<String, Object> map) {
         //获取总记录数和每页的数据
@@ -356,4 +165,86 @@ public class ClueServiceImpl implements ClueService {
         return clueActivityRelationDao.delRelationByClueIdAndActId(map);
     }
 
+
+    /**
+     * 完成线索的转换
+     */
+    public boolean convertClue(Tran tran, String createBy, String id) {
+        boolean flag = true;
+        Clue clue = clueDao.queryClueById2(id);
+
+        //转换客户
+        Customer customer = clue.toCustomer(UUIDUtil.getUUID(), createBy);
+        if(!customerDao.save(customer)){
+            flag=false;
+        }
+
+        //转换联系人
+        Contacts contacts = clue.toContacts(UUIDUtil.getUUID(), customer.getId(), createBy);
+        if(!contactsDao.save(contacts)){
+            flag=false;
+        }
+
+        //转换备注
+        List<ClueRemark> clueRemarks = clueRemarkDao.queryRemarkByClueId(id);
+        List<CustomerRemark> customerRemarks = new ArrayList<>();
+        CustomerRemark customerRemark = null;
+        for (ClueRemark clueRemark : clueRemarks) {//逐条转换备注
+            customerRemark = clueRemark.toCustomerRemark(UUIDUtil.getUUID(), createBy, "0", customer.getId());
+            customerRemarks.add(customerRemark);
+        }
+        if(!customerRemarkDao.saveCustomerRemarks(customerRemarks)) {
+            flag=false;
+        }
+
+        List<ContactsRemark> contactsRemarks = new ArrayList<>();
+        ContactsRemark contactsRemark = null;
+        for (ClueRemark clueRemark : clueRemarks) {//逐条转换备注
+            contactsRemark = clueRemark.toContactsRemark(UUIDUtil.getUUID(), createBy, "0", contacts.getId());
+            contactsRemarks.add(contactsRemark);
+        }
+        if(!contactsRemarkDao.saveContactsRemarks(contactsRemarks)) {
+            flag=false;
+        }
+        System.out.println(contactsRemarks);
+
+        //关系转换
+        List<ClueActivityRelation> clueActivityRelations = clueActivityRelationDao.queryRelationByClueId(id);
+        List<ContactsActivityRelation> contactsActivityRelations = new ArrayList<>();
+        for(int i = 0; i < clueActivityRelations.size(); i++) {
+            ContactsActivityRelation contactsActivityRelation = clueActivityRelations.get(i).toContactsActivityRelation(UUIDUtil.getUUID());
+            contactsActivityRelations.add(contactsActivityRelation);
+        }
+        if(!contactsActivityRelationDao.saveContactsActivityRelations(contactsActivityRelations)) {
+            flag=false;
+        }
+
+        //添加交易
+        if(tran != null) {
+            //owner\customerId\contactsId\createTime\createBy
+            tran.setContactsId(contacts.getId());
+            tran.setCustomerId(customer.getId());
+            if(!tranDao.createTran(tran)) {
+                flag=false;
+            }
+
+            TranHistory tranHistory = tran.toTranHistory(createBy);
+            if(!tranHistoryDao.save(tranHistory)) {
+                flag=false;
+            }
+        }
+
+        //删除线索和备注以及关系
+        if(!clueDao.delById(id)) {
+            flag=false;
+        }
+        if(!clueRemarkDao.delByClueId(id)) {
+            flag=false;
+        }
+        if(!clueActivityRelationDao.delByClueId(id)) {
+            flag=false;
+        }
+
+        return flag;
+    }
 }

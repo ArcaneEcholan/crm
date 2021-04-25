@@ -24,7 +24,7 @@ public interface ClueService {
 
     List<Activity> searchActivityByName(String aname);
 
-    boolean convert(String clueId, Tran transaction, String createBy);
+
 
     PageVo<Clue> page(Map<String, Object> map);
 
@@ -49,4 +49,6 @@ public interface ClueService {
     List<Activity> getAllRelatedActsByClueId(String clueId);
 
     boolean unbund(Map<String, Object> map);
+
+    boolean convertClue(Tran tran, String createBy, String id);
 }

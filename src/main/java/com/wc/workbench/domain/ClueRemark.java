@@ -1,5 +1,8 @@
 package com.wc.workbench.domain;
 
+import com.wc.utils.DateTimeUtil;
+import lombok.Data;
+@Data
 public class ClueRemark implements Comparable<ClueRemark>{
 	
 	private String id;
@@ -10,68 +13,41 @@ public class ClueRemark implements Comparable<ClueRemark>{
 	private String editTime;
 	private String editFlag;
 	private String clueId;
-	
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	public String getNoteContent() {
-		return noteContent;
-	}
-	public void setNoteContent(String noteContent) {
-		this.noteContent = noteContent;
-	}
-	public String getCreateBy() {
-		return createBy;
-	}
-	public void setCreateBy(String createBy) {
-		this.createBy = createBy;
-	}
-	public String getCreateTime() {
-		return createTime;
-	}
-	public void setCreateTime(String createTime) {
-		this.createTime = createTime;
-	}
-	public String getEditBy() {
-		return editBy;
-	}
-	public void setEditBy(String editBy) {
-		this.editBy = editBy;
-	}
-	public String getEditTime() {
-		return editTime;
-	}
-	public void setEditTime(String editTime) {
-		this.editTime = editTime;
-	}
-	public String getEditFlag() {
-		return editFlag;
-	}
-	public void setEditFlag(String editFlag) {
-		this.editFlag = editFlag;
-	}
-	public String getClueId() {
-		return clueId;
-	}
-	public void setClueId(String clueId) {
-		this.clueId = clueId;
+
+	/**
+	 * 无法映射  id
+	 * createTime
+	 * createBy
+	 * editFlag
+	 * customerId
+	 */
+	public CustomerRemark toCustomerRemark(String id, String createBy, String editFlag, String customerId) {
+		CustomerRemark customerRemark = new CustomerRemark();
+		customerRemark.setId(id);
+		customerRemark.setCustomerId(customerId);
+		customerRemark.setEditFlag(editFlag);
+		customerRemark.setCreateTime(DateTimeUtil.getSysTime());
+		customerRemark.setCreateBy(createBy);
+		customerRemark.setNoteContent(noteContent);
+		return customerRemark;
 	}
 
-	@Override
-	public String toString() {
-		return "ClueRemark{" +
-				"id='" + id + '\'' +
-				", noteContent='" + noteContent + '\'' +
-				", createBy='" + createBy + '\'' +
-				", createTime='" + createTime + '\'' +
-				", editBy='" + editBy + '\'' +
-				", editTime='" + editTime + '\'' +
-				", editFlag='" + editFlag + '\'' +
-				", clueId='" + clueId + '\'' +
-				'}';
+	/**
+	 * 无法映射  id
+	 * createTime
+	 * createBy
+	 * editFlag
+	 * contactsId
+	 */
+	public ContactsRemark toContactsRemark(String id, String createBy, String editFlag, String contactsId){
+		ContactsRemark contactsRemark = new ContactsRemark();
+		contactsRemark.setId(id);
+		contactsRemark.setContactsId(contactsId);
+		contactsRemark.setEditFlag(editFlag);
+		contactsRemark.setCreateTime(DateTimeUtil.getSysTime());
+		contactsRemark.setCreateBy(createBy);
+		contactsRemark.setNoteContent(noteContent);
+		return contactsRemark;
 	}
 
 
