@@ -98,4 +98,9 @@ public class DicServiceImpl implements DicService {
 
         return allDicValues;
     }
+
+    @Override
+    public List<String> getAllDicTypeCode() {
+        return dicTypeDao.queryAllDicTypeCode();
+    }
 }

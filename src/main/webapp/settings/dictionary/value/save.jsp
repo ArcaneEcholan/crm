@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
@@ -27,9 +28,9 @@
 			<label for="create-dicTypeCode" class="col-sm-2 control-label">字典类型编码<span style="font-size: 15px; color: red;">*</span></label>
 			<div class="col-sm-10" style="width: 300px;">
 				<select class="form-control" id="create-dicTypeCode" style="width: 200%;">
-				  <option></option>
-				  <option>性别</option>
-				  <option>机构类型</option>
+					<c:forEach items="${codeList}" var="code" >
+						<option>${code}</option>
+					</c:forEach>
 				</select>
 			</div>
 		</div>

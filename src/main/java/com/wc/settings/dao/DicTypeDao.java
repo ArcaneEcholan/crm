@@ -22,4 +22,5 @@ public interface DicTypeDao {
 
     boolean delDicTypesByCodes(String[] codes);
 
+    List<String> queryAllDicTypeCode();
 }

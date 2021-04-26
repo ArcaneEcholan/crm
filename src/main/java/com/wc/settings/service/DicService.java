@@ -27,4 +27,7 @@ public interface DicService {
 
 
     List<DicValue> getAllDicValues();
+
+    List<String> getAllDicTypeCode();
+
 }
