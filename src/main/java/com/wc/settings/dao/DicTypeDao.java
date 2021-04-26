@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface DicTypeDao {
     List<DicType> getAllDicTypes();
+
+    boolean saveDicType(DicType dicType);
 }

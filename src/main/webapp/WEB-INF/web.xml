@@ -90,6 +90,19 @@
         <url-pattern>/tranServlet</url-pattern>
     </servlet-mapping>
 
+    <!--   字典模块控制器-->
+    <servlet>
+        <servlet-name>DicServlet</servlet-name>
+        <servlet-class>com.wc.settings.controller.DicServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DicServlet</servlet-name>
+        <url-pattern>/dicServlet</url-pattern>
+    </servlet-mapping>
+
+
+
+
 
 
 

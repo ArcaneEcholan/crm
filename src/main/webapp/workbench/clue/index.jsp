@@ -506,11 +506,9 @@ String base = request.getScheme()
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-appellation">
 									<option></option>
-									<option selected>先生</option>
-									<option>夫人</option>
-									<option>女士</option>
-									<option>博士</option>
-									<option>教授</option>
+									<c:forEach items="${applicationScope.appellation}" var="appellation">
+										<option value="${appellation.value}">${appellation.text}</option>
+									</c:forEach>
 								</select>
 							</div>
 							<label for="edit-surname" class="col-sm-2 control-label">姓名<span style="font-size: 15px; color: red;">*</span></label>
@@ -550,13 +548,9 @@ String base = request.getScheme()
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-state">
 									<option></option>
-									<option>试图联系</option>
-									<option>将来联系</option>
-									<option selected>已联系</option>
-									<option>虚假线索</option>
-									<option>丢失线索</option>
-									<option>未联系</option>
-									<option>需要条件</option>
+									<c:forEach items="${applicationScope.stage}" var="stage">
+										<option value="${stage.value}">${stage.text}</option>
+									</c:forEach>
 								</select>
 							</div>
 						</div>
@@ -566,20 +560,9 @@ String base = request.getScheme()
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-source">
 									<option></option>
-									<option selected>广告</option>
-									<option>推销电话</option>
-									<option>员工介绍</option>
-									<option>外部介绍</option>
-									<option>在线商场</option>
-									<option>合作伙伴</option>
-									<option>公开媒介</option>
-									<option>销售邮件</option>
-									<option>合作伙伴研讨会</option>
-									<option>内部研讨会</option>
-									<option>交易会</option>
-									<option>web下载</option>
-									<option>web调研</option>
-									<option>聊天</option>
+									<c:forEach items="${applicationScope.source}" var="source">
+										<option value="${source.value}">${source.text}</option>
+									</c:forEach>
 								</select>
 							</div>
 						</div>
@@ -639,7 +622,9 @@ String base = request.getScheme()
 			</div>
 		</div>
 	</div>
-	
+
+
+<%--查询线索--%>
 	<div style="position: relative; top: -20px; left: 0px; width: 100%; height: 100%;">
 	
 		<div style="width: 100%; position: absolute;top: 5px; left: 10px;">
@@ -673,20 +658,9 @@ String base = request.getScheme()
 							<div class="input-group-addon">线索来源</div>
 							<select class="form-control" id="search-source">
 								<option></option>
-								<option>广告</option>
-								<option>推销电话</option>
-								<option>员工介绍</option>
-								<option>外部介绍</option>
-								<option>在线商场</option>
-								<option>合作伙伴</option>
-								<option>公开媒介</option>
-								<option>销售邮件</option>
-								<option>合作伙伴研讨会</option>
-								<option>内部研讨会</option>
-								<option>交易会</option>
-								<option>web下载</option>
-								<option>web调研</option>
-								<option>聊天</option>
+								<c:forEach items="${applicationScope.source}" var="source">
+									<option value="${source.value}">${source.text}</option>
+								</c:forEach>
 							</select>
 						</div>
 					</div>
@@ -714,13 +688,9 @@ String base = request.getScheme()
 							<div class="input-group-addon">线索状态</div>
 							<select class="form-control" id="search-state">
 								<option></option>
-								<option>试图联系</option>
-								<option>将来联系</option>
-								<option>已联系</option>
-								<option>虚假线索</option>
-								<option>丢失线索</option>
-								<option>未联系</option>
-								<option>需要条件</option>
+								<c:forEach items="${applicationScope.stage}" var="stage">
+									<option value="${stage.value}">${stage.text}</option>
+								</c:forEach>
 							</select>
 						</div>
 					</div>
@@ -753,7 +723,6 @@ String base = request.getScheme()
 						</tr>
 					</thead>
 					<tbody id="clueBody">
-
 					</tbody>
 				</table>
 			</div>
@@ -761,7 +730,6 @@ String base = request.getScheme()
 			<div style="height: 50px; position: relative;top: 60px;">
 				<div id="activityPage"></div>
 			</div>
-			
 		</div>
 		
 	</div>

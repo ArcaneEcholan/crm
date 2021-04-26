@@ -5,6 +5,16 @@
 
 <mapper namespace="com.wc.settings.dao.DicTypeDao">
     <select id="getAllDicTypes" resultType="com.wc.settings.domain.DicType">
-        select * from `tbl_dic_type`
+        select * from `tbl_dic_type` order by code
     </select>
+
+    <insert id="saveDicType">
+        insert into tbl_dic_type
+        values
+               (
+                   #{code},
+                   #{name},
+                   #{description}
+               )
+    </insert>
 </mapper>

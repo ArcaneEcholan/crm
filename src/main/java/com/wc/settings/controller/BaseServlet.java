@@ -21,11 +21,11 @@ public class BaseServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
-
+        System.out.println("[SERVLET START]:<<======================================================" + action + " start=========================================================================================>>");
         try {
-
             Method method = this.getClass().getDeclaredMethod(action, HttpServletRequest.class, HttpServletResponse.class);
             method.invoke(this, req,resp);
+            System.out.println("[SERVLET END]:<<======================================================" + action + " end=========================================================================================>>");
         } catch (Exception e) {
             e.printStackTrace();
         }
