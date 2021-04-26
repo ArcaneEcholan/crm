@@ -4,6 +4,43 @@
  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.wc.settings.dao.DicTypeDao">
+    <delete id="delDicTypesByCodes">
+        delete from tbl_dic_type
+        <where>
+            code in
+            <foreach collection="array" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </where>
+    </delete>
+
+    <select id="countTypeByCodeExceptOriginalOne" resultType="int">
+        select count(*)
+        from tbl_dic_type
+        where code=#{code}
+    </select>
+
+    <update id="updateDicTypeByOriginalCode" >
+        update tbl_dic_type
+        set
+            code=#{dicType.code},
+            name=#{dicType.name},
+            description=#{dicType.description}
+        where code=#{originalCode}
+    </update>
+
+    <update id="updateDicType1" >
+        update tbl_dic_type
+        set
+            name=#{name},
+            description=#{description}
+        where code=#{code}
+    </update>
+
+    <select id="queryDicTypeByCode" resultType="com.wc.settings.domain.DicType">
+        select * from `tbl_dic_type` where code=#{code}
+    </select>
+
     <select id="getAllDicTypes" resultType="com.wc.settings.domain.DicType">
         select * from `tbl_dic_type` order by code
     </select>

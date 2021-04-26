@@ -6,6 +6,24 @@
 <mapper namespace="com.wc.settings.dao.DicValueDao">
 
     <select id="getAllDicValues" resultType="com.wc.settings.domain.DicValue">
+        select * from tbl_dic_value
+    </select>
+
+    <delete id="delDicValuesByCodes">
+        delete from tbl_dic_value
+        <where>
+            typeCode in
+            <foreach collection="array" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </where>
+    </delete>
+
+    <update id="updateTypeCodeByOriginalCode">
+        update tbl_dic_value set typeCode=#{dicType.code} where typeCode=#{originalCode}
+    </update>
+
+    <select id="getAllDicValuesByTypeCode" resultType="com.wc.settings.domain.DicValue">
         select * from `tbl_dic_value` where `typeCode` = #{dicTypeCode} order by orderNo
     </select>
 
