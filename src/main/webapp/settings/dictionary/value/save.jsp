@@ -11,14 +11,41 @@
 
 <script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
 <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+		$(function () {
+
+			//添加按钮
+			$("#saveValueButton").click(function () {
+				$.get("dicServlet", {
+					"action":"saveDicValue",
+
+					"typeCode":$("#create-dicTypeCode").val(),
+					"value":$("#create-dicValue").val(),
+					"text":$("#create-text").val(),
+					"orderNo":$("#create-orderNo").val()
+				}, function (data) {
+					console.log(data.success)
+					if(data.success) {
+						alert("保存成功")
+						$("#create-dicValue").val("")
+						$("#create-text").val("")
+						$("#create-orderNo").val("")
+					} else {
+						alert("保存失败")
+					}
+				}, "json")
+			})
+
+		})
+	</script>
 </head>
 <body>
 
 	<div style="position:  relative; left: 30px;">
 		<h3>新增字典值</h3>
 	  	<div style="position: relative; top: -40px; left: 70%;">
-			<button type="button" class="btn btn-primary">保存</button>
-			<button type="button" class="btn btn-default" onclick="window.history.back();">取消</button>
+			<button type="button" id="saveValueButton" class="btn btn-primary">保存</button>
+			<button type="button" class="btn btn-default" onclick="window.location.href='settings/dictionary/value/index.jsp';">返回</button>
 		</div>
 		<hr style="position: relative; top: -40px;">
 	</div>

@@ -5,6 +5,35 @@
 
 <mapper namespace="com.wc.settings.dao.DicValueDao">
 
+    <update id="editDicValue">
+        update tbl_dic_value set value=#{value},text=#{text},orderNo=#{orderNo} where id=#{id}
+    </update>
+
+    <select id="queryDicValueById" resultType="com.wc.settings.domain.DicValue">
+        select * from tbl_dic_value where id=#{id}
+    </select>
+
+    <delete id="delDicValuesByIds">
+        delete from tbl_dic_value
+        <where>
+            id in
+            <foreach collection="array" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+        </where>
+    </delete>
+
+    <insert id="saveDicValue">
+        insert into tbl_dic_value
+        values(
+                 #{id},
+                 #{value}   ,
+                 #{text}    ,
+                 #{orderNo} ,
+                 #{typeCode}
+              )
+    </insert>
+
     <select id="getAllDicValues" resultType="com.wc.settings.domain.DicValue">
         select * from tbl_dic_value
     </select>

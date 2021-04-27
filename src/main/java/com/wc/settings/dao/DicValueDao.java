@@ -13,4 +13,12 @@ public interface DicValueDao {
     boolean delDicValuesByCodes(String[] codes);
 
     List<DicValue> getAllDicValues();
+
+    boolean saveDicValue(DicValue dicValue);
+
+    boolean delDicValuesByIds(String[] ids);
+
+    DicValue queryDicValueById(String id);
+
+    boolean editDicValue(DicValue dicValue);
 }

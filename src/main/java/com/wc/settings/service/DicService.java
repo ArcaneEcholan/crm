@@ -30,4 +30,12 @@ public interface DicService {
 
     List<String> getAllDicTypeCode();
 
+    boolean saveDicValue(DicValue dicValue);
+
+    boolean delDicValuesByIds(String[] ids);
+
+    DicValue getDicValueById(String id);
+
+    boolean editDicValue(DicValue dicValue);
+
 }

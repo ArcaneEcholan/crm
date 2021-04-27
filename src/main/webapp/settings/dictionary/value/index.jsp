@@ -11,6 +11,48 @@
 	<script type="text/javascript">
 		$(function() {
 
+			//编辑字典类型
+			//前端需要做：跳转到编辑页面，并将选中的字典类型的代号发送过去
+			$("#openEditPage").click(function () {
+				var $input = $(":input:checked");
+				if($input.length == 1) {
+					var id = $input.val();
+					window.location.href='dicServlet?action=openEditPage&id=' + id;
+				} else if($input.length > 1){
+					alert("每次只能修改一个value")
+				} else {
+					alert("请选择要编辑的value")
+				}
+			})
+
+			$("#delBtn").click(function () {
+				var $input = $(":input:checked");
+
+				if($input.length==0) {
+					alert("请选择需要删除的value")
+				} else {
+					if(confirm("你确定要删除吗")) {
+						var params = "";
+						for (let i = 0; i < $input.length; i++) {
+							params += ("id=" + $($input[i]).val());
+
+							if(i < $input.length - 1) {
+								params += "&";
+							}
+						}
+						console.log(params)
+						$.get("dicServlet", params + "&action=delDicValuesByIds", function(data){
+							if(data.success) {
+								alert("删除成功")
+								showAllDicValues()
+							} else{
+								alert("删除失败")
+							}
+						}, "json")
+					}
+				}
+			})
+
 			$("#createBtn").click(function () {
 				window.location.href = "dicServlet?action=getAllDicTypeCode";
 			})
@@ -50,9 +92,9 @@
 	</div>
 	<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;left: 30px;">
 		<div class="btn-group" style="position: relative; top: 18%;">
-		  <button type="button" class="btn btn-primary" id="createBtn""><span class="glyphicon glyphicon-plus"></span> 创建</button>
-		  <button type="button" class="btn btn-default" onclick="window.location.href='settings/dictionary/value/edit.jsp'"><span class="glyphicon glyphicon-edit"></span> 编辑</button>
-		  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
+		  <button type="button" class="btn btn-primary" id="createBtn"><span class="glyphicon glyphicon-plus"></span> 创建</button>
+		  <button type="button" class="btn btn-default" id="openEditPage"><span class="glyphicon glyphicon-edit"></span> 编辑</button>
+		  <button type="button" class="btn btn-danger" id="delBtn"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 		</div>
 	</div>
 	<div style="position: relative; left: 30px; top: 20px;">

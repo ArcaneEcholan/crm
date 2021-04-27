@@ -103,4 +103,27 @@ public class DicServiceImpl implements DicService {
     public List<String> getAllDicTypeCode() {
         return dicTypeDao.queryAllDicTypeCode();
     }
+
+    @Override
+    public boolean saveDicValue(DicValue dicValue) {
+        return dicValueDao.saveDicValue(dicValue);
+    }
+
+    @Override
+    public boolean delDicValuesByIds(String[] ids) {
+
+        return dicValueDao.delDicValuesByIds(ids);
+    }
+
+    @Override
+    public DicValue getDicValueById(String id) {
+
+
+        return dicValueDao.queryDicValueById(id);
+    }
+
+    @Override
+    public boolean editDicValue(DicValue dicValue) {
+        return dicValueDao.editDicValue(dicValue);
+    }
 }
